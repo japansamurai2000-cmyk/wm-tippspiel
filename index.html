@@ -862,7 +862,7 @@ function unlockAdmin() {
     document.getElementById('adminLock').style.display = 'none';
     document.getElementById('adminContent').style.display = 'block';
     renderAdminMatches();
-  } else { toast('❌ Falsches Passwort'); }
+  } else { toast(t('wrong_pw')); }
 }
 function renderAdminMatches() {
   let html = `<button class="btn btn-accent" onclick="saveResults()" style="margin-bottom:16px">💾 Alles speichern</button>`;
