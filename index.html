@@ -829,10 +829,11 @@ function renderStartSchedule() {
     if (scheduleFilterVal === 'upcoming') return d >= today;
     return true;
   });
+  const locale = lang === 'de' ? 'de-DE' : 'en-GB';
   const fmt = d => {
     const obj = new Date(d + 'T12:00:00');
-    const day = obj.toLocaleDateString('de-DE', { weekday: 'long' });
-    const date = obj.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' });
+    const day  = obj.toLocaleDateString(locale, { weekday: 'long' });
+    const date = obj.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
     return `${day}, ${date}`;
   };
   const el = document.getElementById('scheduleContent');
