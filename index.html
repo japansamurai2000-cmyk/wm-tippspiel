@@ -770,7 +770,7 @@ function matchTipCard(m) {
   const res = results[k];
   const resHtml = res
     ? `<div class="res-box"><span class="res-score">${res.g1}</span>:<span class="res-score">${res.g2}</span></div>`
-    : `<span style="font-size:.78rem;opacity:.6">Kein Ergebnis</span>`;
+    : `<span style="font-size:.78rem;opacity:.6">${t('no_result')}</span>`;
   const cells = PARTICIPANTS.map(p => {
     const tip = (tips[p.name] || {})[k];
     const hasTip = tip && tip.g1 != null;
