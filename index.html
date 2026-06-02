@@ -503,7 +503,7 @@ function boot() {
 
 // ─── AUTO-SAVE ────────────────────────────────────────────────────────────────
 function scheduleSave() {
-  showStrip('saving', '⏳ Wird gespeichert…');
+  showStrip('saving', t('saving'));
   clearTimeout(saveTimer);
   saveTimer = setTimeout(flushSave, 1500);
 }
