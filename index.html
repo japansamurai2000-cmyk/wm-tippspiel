@@ -365,11 +365,11 @@ nav { background: rgba(0,0,0,.18); }
 <!-- ADMIN -->
 <div class="page" id="page-admin">
   <div class="card">
-    <div class="card-title">🔧 Ergebnisse eintragen</div>
-    <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Hier werden die echten Spielergebnisse eingegeben. Diese zählen für die Punkte aller Teilnehmer.</p>
+    <div class="card-title" data-i18n="admin_title">🔧 Ergebnisse eintragen</div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px" data-i18n="admin_hint">Hier werden die echten Spielergebnisse eingegeben. Diese zählen für die Punkte aller Teilnehmer.</p>
     <div style="display:flex;gap:8px;margin-bottom:0" id="adminLock">
-      <input class="score-in" type="password" id="adminPw" placeholder="Passwort" style="width:160px;height:40px;font-size:.9rem;font-weight:normal;text-align:left;padding:0 10px">
-      <button class="btn btn-primary" onclick="unlockAdmin()">Freischalten</button>
+      <input class="score-in" type="password" id="adminPw" data-i18n-placeholder="pw_lbl" placeholder="Passwort" style="width:160px;height:40px;font-size:.9rem;font-weight:normal;text-align:left;padding:0 10px">
+      <button class="btn btn-primary" onclick="unlockAdmin()" data-i18n="unlock_btn">Freischalten</button>
     </div>
     <div id="adminContent" style="display:none;margin-top:16px"></div>
   </div>
