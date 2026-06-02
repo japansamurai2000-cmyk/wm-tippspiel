@@ -4,414 +4,337 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WM 2026 Tippspiel</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
-  :root {
-    --primary: #1a3a5c;
-    --accent: #e8a020;
-    --green: #2ecc71;
-    --red: #e74c3c;
-    --gray: #f4f6f9;
-    --border: #dde3ea;
-    --text: #1c2b3a;
-    --muted: #7a8fa6;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
+:root {
+  --primary: #1a3a5c;
+  --accent: #e8a020;
+  --green: #16a34a;
+  --red: #dc2626;
+  --border: #dde3ea;
+  --gray: #f4f6f9;
+  --text: #1c2b3a;
+  --muted: #6b7280;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
 
-  /* Header */
-  header {
-    background: linear-gradient(135deg, var(--primary) 0%, #0f2540 100%);
-    color: white; padding: 0;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-  }
-  .header-inner {
-    max-width: 1100px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px;
-  }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon { font-size: 2rem; }
-  .logo-text h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px; }
-  .logo-text span { font-size: 0.8rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
-  .user-badge {
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 24px; padding: 8px 16px; cursor: pointer;
-    display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
-    transition: background 0.2s;
-  }
-  .user-badge:hover { background: rgba(255,255,255,0.18); }
+/* ─── HEADER ─── */
+header {
+  background: linear-gradient(135deg, #1a3a5c 0%, #0f2540 100%);
+  color: white; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+.header-top {
+  max-width: 1000px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo span { font-size: 1.8rem; }
+.logo-text h1 { font-size: 1.1rem; font-weight: 700; }
+.logo-text small { font-size: 0.72rem; color: var(--accent); letter-spacing: .8px; text-transform: uppercase; }
+.user-pill {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px; padding: 7px 14px; cursor: pointer;
+  font-size: .9rem; display: flex; align-items: center; gap: 6px;
+  transition: background .2s;
+}
+.user-pill:hover { background: rgba(255,255,255,.2); }
+.conn-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; }
+.conn-dot.off { background: #ef4444; }
 
-  /* Nav */
-  nav {
-    background: var(--primary);
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .nav-inner {
-    max-width: 1100px; margin: 0 auto;
-    display: flex; gap: 0; overflow-x: auto;
-  }
-  .nav-btn {
-    padding: 12px 22px; color: rgba(255,255,255,0.65);
-    border: none; background: none; cursor: pointer;
-    font-size: 0.9rem; font-weight: 500;
-    border-bottom: 3px solid transparent;
-    white-space: nowrap;
-    transition: all 0.2s;
-  }
-  .nav-btn:hover { color: white; }
-  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+nav { background: rgba(0,0,0,.18); }
+.nav-inner { max-width: 1000px; margin: 0 auto; display: flex; overflow-x: auto; scrollbar-width: none; }
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-btn {
+  padding: 11px 18px; color: rgba(255,255,255,.6);
+  border: none; background: none; cursor: pointer;
+  font-size: .88rem; font-weight: 500;
+  border-bottom: 3px solid transparent; white-space: nowrap;
+  transition: all .2s; flex-shrink: 0;
+}
+.nav-btn:hover { color: white; }
+.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* Pages */
-  .page { display: none; max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
-  .page.active { display: block; }
+/* ─── LAYOUT ─── */
+.page { display: none; max-width: 1000px; margin: 0 auto; padding: 20px 14px 80px; }
+.page.active { display: block; }
+.card { background: white; border-radius: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.07); padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
 
-  /* Cards */
-  .card {
-    background: white; border-radius: 12px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
-    padding: 24px; margin-bottom: 20px;
-  }
-  .card-title {
-    font-size: 1.05rem; font-weight: 700; color: var(--primary);
-    margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
-  }
-  .card-title .badge {
-    background: var(--primary); color: white;
-    padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
-  }
+/* ─── LOGIN PAGE ─── */
+.login-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.name-btn {
+  padding: 22px 12px; border-radius: 14px; border: 2.5px solid var(--border);
+  background: white; cursor: pointer; text-align: center;
+  transition: all .2s; touch-action: manipulation;
+}
+.name-btn:hover, .name-btn:active { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 14px rgba(26,58,92,.15); }
+.name-btn .av { font-size: 2.4rem; margin-bottom: 8px; }
+.name-btn .nm { font-weight: 700; font-size: 1rem; }
+.name-btn .pts { font-size: .78rem; color: var(--muted); margin-top: 3px; }
+.name-btn.viewer { border-style: dashed; opacity: .75; }
 
-  /* Login page */
-  .login-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px; margin-top: 8px;
-  }
-  .participant-btn {
-    padding: 20px 16px; border-radius: 12px; border: 2px solid var(--border);
-    background: white; cursor: pointer; text-align: center;
-    transition: all 0.2s; font-size: 0.95rem;
-  }
-  .participant-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,58,92,0.12); }
-  .participant-btn .avatar { font-size: 2rem; margin-bottom: 8px; }
-  .participant-btn .pname { font-weight: 600; color: var(--text); }
-  .participant-btn .pscore { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
-  .participant-btn.viewer { border-style: dashed; }
+/* ─── MATCH ROWS ─── */
+.group-block { margin-bottom: 24px; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.group-head {
+  background: var(--primary); color: white;
+  padding: 10px 14px; font-weight: 700; font-size: .88rem; letter-spacing: .4px;
+}
+.match-row {
+  display: grid; grid-template-columns: 1fr 108px 1fr;
+  align-items: center; gap: 8px; padding: 11px 14px;
+  background: white; border-top: 1px solid var(--border);
+}
+.match-row:first-of-type { border-top: none; }
+.match-row.settled { background: #f0fdf4; }
+.t-name { font-size: .9rem; font-weight: 500; line-height: 1.2; }
+.t-right { text-align: right; }
+.score-wrap { display: flex; align-items: center; justify-content: center; gap: 5px; }
+.score-in {
+  width: 44px; height: 44px; border: 2px solid var(--border);
+  border-radius: 8px; text-align: center; font-size: 1.15rem; font-weight: 700;
+  color: var(--primary); transition: border-color .2s; -moz-appearance: textfield;
+}
+.score-in::-webkit-outer-spin-button, .score-in::-webkit-inner-spin-button { -webkit-appearance: none; }
+.score-in:focus { outline: none; border-color: var(--accent); }
+.score-in:read-only { background: var(--gray); border-color: var(--border); color: var(--muted); cursor: default; }
+.sep { font-weight: 800; color: var(--muted); }
+.result-row { font-size: .72rem; text-align: center; margin-top: 3px; color: var(--muted); }
 
-  /* Match list */
-  .group-section { margin-bottom: 28px; }
-  .group-header {
-    background: var(--primary); color: white;
-    padding: 10px 16px; border-radius: 8px 8px 0 0;
-    font-weight: 700; font-size: 0.95rem; letter-spacing: 0.5px;
-  }
-  .match-row {
-    display: grid; grid-template-columns: 1fr 110px 1fr;
-    align-items: center; gap: 10px;
-    padding: 12px 16px; background: white;
-    border: 1px solid var(--border); border-top: none;
-    transition: background 0.15s;
-  }
-  .match-row:last-child { border-radius: 0 0 8px 8px; }
-  .match-row:hover { background: #f8fafc; }
-  .match-row.has-result { background: #f0faf4; }
-  .team-name { font-size: 0.9rem; font-weight: 500; }
-  .team-right { text-align: right; }
-  .score-input-wrap {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .score-input {
-    width: 40px; height: 36px; border: 2px solid var(--border);
-    border-radius: 8px; text-align: center; font-size: 1rem;
-    font-weight: 700; color: var(--primary);
-    transition: border-color 0.2s;
-  }
-  .score-input:focus { outline: none; border-color: var(--accent); }
-  .score-sep { font-weight: 700; color: var(--muted); font-size: 1.1rem; }
-  .match-date { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 4px; }
+/* ─── CHIPS ─── */
+.chip { display: inline-block; padding: 2px 7px; border-radius: 10px; font-size: .72rem; font-weight: 700; }
+.chip-3 { background: #dcfce7; color: #15803d; }
+.chip-1 { background: #fef3c7; color: #92400e; }
+.chip-0 { background: #fee2e2; color: #991b1b; }
+.chip-open { background: #f3f4f6; color: #6b7280; }
 
-  /* Result display in overview */
-  .score-display {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    font-weight: 700; font-size: 1rem; color: var(--primary);
-  }
-  .score-box {
-    background: var(--primary); color: white;
-    padding: 4px 10px; border-radius: 6px; min-width: 32px; text-align: center;
-  }
+/* ─── STANDINGS ─── */
+.standings { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.standings th { background: var(--primary); color: white; padding: 10px 12px; text-align: left; font-size: .78rem; text-transform: uppercase; letter-spacing: .4px; font-weight: 700; }
+.standings td { padding: 12px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.standings tr:last-child td { border-bottom: none; }
+.standings tr:hover td { background: var(--gray); }
+.pts-big { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+.bar-wrap { width: 70px; height: 7px; background: var(--border); border-radius: 4px; display: inline-block; vertical-align: middle; margin-left: 8px; }
+.bar-fill { height: 7px; background: var(--accent); border-radius: 4px; }
+.medal { font-size: 1.2rem; }
 
-  /* Standings */
-  .standings-table {
-    width: 100%; border-collapse: collapse; font-size: 0.9rem;
-  }
-  .standings-table th {
-    background: var(--primary); color: white;
-    padding: 10px 14px; text-align: left; font-weight: 600;
-    font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .standings-table th:last-child, .standings-table td:last-child { text-align: right; }
-  .standings-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
-  .standings-table tr:last-child td { border-bottom: none; }
-  .standings-table tr:hover td { background: var(--gray); }
-  .rank { font-weight: 700; color: var(--muted); }
-  .rank-1 { color: #f59e0b; font-size: 1.1rem; }
-  .rank-2 { color: #9ca3af; font-size: 1.05rem; }
-  .rank-3 { color: #a16207; }
-  .pts { font-weight: 800; font-size: 1.1rem; color: var(--primary); }
-  .pts-exact { font-size: 0.8rem; color: var(--green); }
+/* ─── ALL TIPS ─── */
+.all-match { margin-bottom: 18px; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.all-head { background: #1e3a5a; color: white; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; }
+.all-head .teams { font-weight: 700; font-size: .9rem; }
+.res-box { display: flex; gap: 4px; align-items: center; }
+.res-score { background: rgba(255,255,255,.2); border-radius: 5px; padding: 3px 9px; font-weight: 800; font-size: .95rem; }
+.tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); background: white; }
+.tip-cell { padding: 11px 13px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.tip-who { font-size: .72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; }
+.tip-val { font-size: 1.05rem; font-weight: 800; color: var(--primary); }
 
-  /* Point chips */
-  .chip {
-    display: inline-block; padding: 2px 8px; border-radius: 10px;
-    font-size: 0.75rem; font-weight: 600;
-  }
-  .chip-exact { background: #d1fae5; color: #065f46; }
-  .chip-tend { background: #fef3c7; color: #92400e; }
-  .chip-miss { background: #fee2e2; color: #991b1b; }
-  .chip-open { background: #e5e7eb; color: #6b7280; }
+/* ─── FILTER ─── */
+.filter-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+.fb { padding: 6px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: .8rem; font-weight: 600; color: var(--muted); transition: all .2s; }
+.fb.on { background: var(--primary); color: white; border-color: var(--primary); }
 
-  /* All tips view */
-  .tips-match-card { margin-bottom: 20px; }
-  .tips-match-header {
-    background: #1e3a5a; color: white;
-    padding: 12px 16px; border-radius: 8px 8px 0 0;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .tips-match-header .teams { font-weight: 700; }
-  .tips-match-header .actual-result { font-size: 0.85rem; }
-  .tips-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    border: 1px solid var(--border); border-top: none;
-    border-radius: 0 0 8px 8px; overflow: hidden;
-  }
-  .tip-cell {
-    padding: 12px 14px; border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border); background: white;
-  }
-  .tip-cell:last-child { border-right: none; }
-  .tip-name { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-  .tip-score { font-size: 1.1rem; font-weight: 800; color: var(--primary); margin: 4px 0; }
+/* ─── BUTTONS ─── */
+.btn { padding: 11px 22px; border-radius: 9px; border: none; cursor: pointer; font-size: .9rem; font-weight: 700; transition: all .2s; touch-action: manipulation; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: #0f2540; }
+.btn-accent { background: var(--accent); color: white; }
+.btn-accent:hover { background: #c47b10; }
+.btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
 
-  /* Buttons */
-  .btn {
-    padding: 10px 22px; border-radius: 8px; border: none;
-    cursor: pointer; font-size: 0.9rem; font-weight: 600;
-    transition: all 0.2s;
-  }
-  .btn-primary { background: var(--primary); color: white; }
-  .btn-primary:hover { background: #0f2540; }
-  .btn-accent { background: var(--accent); color: white; }
-  .btn-accent:hover { background: #c8880e; }
-  .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
-  .btn-outline:hover { background: var(--primary); color: white; }
+/* ─── SAVE STATUS ─── */
+.save-strip {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--green); color: white; text-align: center;
+  padding: 12px; font-weight: 700; font-size: .9rem;
+  transform: translateY(100%); transition: transform .35s;
+  z-index: 200;
+}
+.save-strip.saving { background: var(--accent); }
+.save-strip.show { transform: translateY(0); }
 
-  /* Modal */
-  .modal-bg {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000; padding: 20px;
-  }
-  .modal-bg.hidden { display: none; }
-  .modal {
-    background: white; border-radius: 16px;
-    padding: 32px; max-width: 440px; width: 100%;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  }
-  .modal h2 { font-size: 1.3rem; margin-bottom: 8px; color: var(--primary); }
-  .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
-  .form-group { margin-bottom: 16px; }
-  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-  .form-control {
-    width: 100%; padding: 10px 14px; border: 2px solid var(--border);
-    border-radius: 8px; font-size: 0.95rem;
-    transition: border-color 0.2s;
-  }
-  .form-control:focus { outline: none; border-color: var(--primary); }
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+/* ─── SETUP SCREEN ─── */
+#setupScreen {
+  max-width: 600px; margin: 60px auto; padding: 0 16px;
+}
+.setup-card { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,.1); }
+.setup-card h2 { color: var(--primary); margin-bottom: 8px; font-size: 1.4rem; }
+.setup-card p { color: var(--muted); font-size: .92rem; line-height: 1.6; margin-bottom: 14px; }
+.step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+.step-num { background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; }
+.step-text { font-size: .88rem; color: var(--text); line-height: 1.5; }
+.step-text code { background: var(--gray); padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: .85rem; color: var(--primary); }
+.config-box { background: #1e293b; color: #e2e8f0; border-radius: 8px; padding: 16px; font-family: monospace; font-size: .8rem; line-height: 1.7; overflow-x: auto; margin: 14px 0; }
+.config-highlight { color: #fbbf24; }
 
-  /* Admin */
-  .admin-match-row {
-    display: grid; grid-template-columns: 1fr 130px 1fr;
-    align-items: center; gap: 10px;
-    padding: 10px 16px; border-bottom: 1px solid var(--border);
-  }
-  .admin-match-row:last-child { border-bottom: none; }
+/* ─── MISC ─── */
+.empty { text-align: center; padding: 48px 20px; color: var(--muted); }
+.empty .ei { font-size: 2.8rem; margin-bottom: 10px; }
+.prog-wrap { background: var(--border); border-radius: 4px; height: 6px; }
+.prog-bar { background: var(--accent); height: 6px; border-radius: 4px; transition: width .4s; }
+.toast {
+  position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #1c2b3a; color: white; padding: 10px 20px;
+  border-radius: 8px; font-size: .88rem; font-weight: 600;
+  opacity: 0; transition: all .3s; pointer-events: none; z-index: 300;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* Responsive */
-  @media (max-width: 600px) {
-    .match-row { grid-template-columns: 1fr 96px 1fr; }
-    .tips-grid { grid-template-columns: repeat(2, 1fr); }
-    .header-inner { flex-wrap: wrap; gap: 10px; }
-  }
-
-  /* Save bar */
-  .save-bar {
-    position: sticky; bottom: 0; left: 0; right: 0;
-    background: var(--primary); color: white;
-    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
-  }
-  .save-bar.hidden { display: none; }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-    background: #1c2b3a; color: white; padding: 12px 24px;
-    border-radius: 8px; font-weight: 500; font-size: 0.9rem;
-    z-index: 999; opacity: 0; transition: opacity 0.3s;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; }
-
-  .empty-state {
-    text-align: center; padding: 48px 20px; color: var(--muted);
-  }
-  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
-
-  .progress-bar-wrap { background: var(--border); border-radius: 4px; height: 6px; margin-top: 6px; }
-  .progress-bar { background: var(--accent); height: 6px; border-radius: 4px; transition: width 0.4s; }
-
-  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-  .filter-btn {
-    padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border);
-    background: white; cursor: pointer; font-size: 0.82rem; font-weight: 600;
-    transition: all 0.2s; color: var(--muted);
-  }
-  .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+@media (max-width: 480px) {
+  .login-grid { grid-template-columns: repeat(3, 1fr); }
+  .match-row { grid-template-columns: 1fr 96px 1fr; }
+  .score-in { width: 38px; height: 40px; font-size: 1rem; }
+  .tips-grid { grid-template-columns: repeat(2, 1fr); }
+  .standings th, .standings td { padding: 9px 8px; }
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="logo">
-      <span class="logo-icon">⚽</span>
-      <div class="logo-text">
-        <h1>WM 2026 Tippspiel</h1>
-        <span>Kanada · Mexiko · USA</span>
-      </div>
-    </div>
-    <div class="user-badge" onclick="showLogin()">
-      <span id="userIcon">👤</span>
-      <span id="userName">Anmelden</span>
-    </div>
-  </div>
-  <nav>
-    <div class="nav-inner">
-      <button class="nav-btn active" onclick="showPage('start')">🏠 Start</button>
-      <button class="nav-btn" onclick="showPage('tipps')">✏️ Meine Tipps</button>
-      <button class="nav-btn" onclick="showPage('tabelle')">🏆 Tabelle</button>
-      <button class="nav-btn" onclick="showPage('alle')">📋 Alle Tipps</button>
-      <button class="nav-btn" onclick="showPage('admin')">🔧 Ergebnisse</button>
-    </div>
-  </nav>
-</header>
+<!-- ═══ SETUP SCREEN ═══════════════════════════════════════════════════════ -->
+<div id="setupScreen" style="display:none">
+  <div style="text-align:center; margin-bottom:24px; font-size:2.5rem">⚽</div>
+  <div class="setup-card">
+    <h2>Firebase einrichten</h2>
+    <p>Das Tippspiel braucht eine Firebase-Datenbank, damit alle Teilnehmer auf verschiedenen Geräten spielen können. Einmalige Einrichtung — ca. 5 Minuten.</p>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<!-- LOGIN MODAL -->
-<div class="modal-bg hidden" id="loginModal">
-  <div class="modal">
-    <h2>👋 Wer bist du?</h2>
-    <p>Wähle deinen Namen oder tippe als Gast.</p>
-    <div id="loginGrid" class="login-grid"></div>
-    <div id="nameEntry" style="display:none; margin-top:16px;">
-      <div class="form-group">
-        <label>Dein Name</label>
-        <input class="form-control" id="nameInput" placeholder="Name eingeben..." maxlength="20">
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-outline" onclick="cancelNameEntry()">Zurück</button>
-        <button class="btn btn-primary" onclick="confirmName()">Bestätigen</button>
-      </div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Gehe zu <strong>console.firebase.google.com</strong> und melde dich mit Google an.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text">Klicke <strong>„Projekt erstellen"</strong>, gib z.B. <code>wm-tippspiel</code> ein, Google Analytics kann deaktiviert bleiben.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Links im Menü → <strong>Build → Realtime Database → Datenbank erstellen → Im Testmodus starten → Fertigstellen.</strong></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">Links → <strong>Projekteinstellungen (Zahnrad) → Allgemein → „Web-App hinzufügen" (&lt;/&gt;)</strong>. App-Nickname eingeben, dann siehst du den <code>firebaseConfig</code>-Block.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-text">Öffne die Datei <code>index.html</code> im Texteditor, suche den Block unten und ersetze die Platzhalter mit deinen Werten:</div>
+    </div>
+    <div class="config-box">
+<span class="config-highlight">const firebaseConfig = {</span><br>
+&nbsp;&nbsp;apiKey: <span class="config-highlight">"DEIN_API_KEY"</span>,<br>
+&nbsp;&nbsp;authDomain: <span class="config-highlight">"DEIN_PROJECT.firebaseapp.com"</span>,<br>
+&nbsp;&nbsp;databaseURL: <span class="config-highlight">"https://DEIN_PROJECT-default-rtdb.firebaseio.com"</span>,<br>
+&nbsp;&nbsp;projectId: <span class="config-highlight">"DEIN_PROJECT"</span>,<br>
+&nbsp;&nbsp;storageBucket: <span class="config-highlight">"DEIN_PROJECT.appspot.com"</span>,<br>
+&nbsp;&nbsp;messagingSenderId: <span class="config-highlight">"DEINE_SENDER_ID"</span>,<br>
+&nbsp;&nbsp;appId: <span class="config-highlight">"DEINE_APP_ID"</span><br>
+<span class="config-highlight">};</span>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-text">Datei speichern → <code>git add index.html &amp;&amp; git commit -m "Firebase config" &amp;&amp; git push</code> → fertig!</div>
     </div>
   </div>
 </div>
 
-<!-- PAGES -->
+<!-- ═══ MAIN APP ═══════════════════════════════════════════════════════════ -->
+<div id="app" style="display:none">
 
-<!-- START -->
-<div class="page active" id="page-start">
-  <div class="card">
-    <div style="text-align:center; padding: 16px 0 8px;">
-      <div style="font-size:3.5rem;">⚽🏆</div>
-      <h2 style="font-size:1.5rem; margin: 12px 0 8px; color:var(--primary);">Willkommen zum WM 2026 Tippspiel!</h2>
-      <p style="color:var(--muted); max-width:500px; margin:0 auto 20px;">
-        Tippe alle 104 Gruppenspiele und gewinne Punkte für richtige Prognosen. Exaktes Ergebnis = 3 Punkte, richtige Tendenz = 1 Punkt.
-      </p>
-      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="showLogin()">Jetzt anmelden</button>
-        <button class="btn btn-outline" onclick="showPage('tabelle')">Tabelle ansehen</button>
+<header>
+  <div class="header-top">
+    <div class="logo">
+      <span>⚽</span>
+      <div class="logo-text">
+        <h1>WM 2026 Tippspiel</h1>
+        <small>Kanada · Mexiko · USA</small>
       </div>
     </div>
-  </div>
-
-  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;">
-    <div class="card" style="padding:20px;">
-      <div class="card-title">📅 Spielplan</div>
-      <p style="font-size:0.88rem; color:var(--muted);">Gruppenphase: 11.–27. Juni 2026<br>Achtelfinale: 29. Juni – 6. Juli<br>Viertelfinale: 9.–10. Juli<br>Halbfinale: 14.–15. Juli<br>Finale: 19. Juli 2026</p>
+    <div class="user-pill" onclick="showLoginPage()">
+      <span id="connDot" class="conn-dot off" title="Verbindungsstatus"></span>
+      <span id="headerAvatar">👤</span>
+      <span id="headerName">Anmelden</span>
     </div>
-    <div class="card" style="padding:20px;">
-      <div class="card-title">🎯 Punktesystem</div>
-      <div style="font-size:0.88rem;">
-        <div style="display:flex;justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
-          <span>Exaktes Ergebnis</span><strong style="color:var(--primary);">3 Punkte</strong>
-        </div>
-        <div style="display:flex;justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
-          <span>Richtige Tendenz</span><strong style="color:var(--accent);">1 Punkt</strong>
-        </div>
-        <div style="display:flex;justify-content:space-between; padding:4px 0;">
-          <span>Falsch</span><strong style="color:var(--muted);">0 Punkte</strong>
-        </div>
+  </div>
+  <nav>
+    <div class="nav-inner">
+      <button class="nav-btn active" onclick="goTo('login')">👋 Start</button>
+      <button class="nav-btn" onclick="goTo('tipps')">✏️ Meine Tipps</button>
+      <button class="nav-btn" onclick="goTo('tabelle')">🏆 Tabelle</button>
+      <button class="nav-btn" onclick="goTo('alle')">📋 Alle Tipps</button>
+      <button class="nav-btn" onclick="goTo('admin')">🔧 Ergebnisse</button>
+    </div>
+  </nav>
+</header>
+
+<!-- START / LOGIN -->
+<div class="page active" id="page-login">
+  <div class="card">
+    <div style="text-align:center;padding:12px 0 6px">
+      <div style="font-size:3rem">🏆</div>
+      <h2 style="font-size:1.3rem;margin:10px 0 6px;color:var(--primary)">Wer bist du?</h2>
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:18px">Tippe deinen Namen an, um deine Tipps einzugeben.</p>
+      <div class="login-grid" id="loginGrid"></div>
+    </div>
+  </div>
+  <div class="card" id="myStatusCard" style="display:none">
+    <div class="card-title" id="myStatusTitle"></div>
+    <div id="myStatusBody"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🎯 Punktesystem</div>
+    <div style="font-size:.88rem;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span>Exaktes Ergebnis (z.B. 2:1 getippt, 2:1 gespielt)</span>
+        <strong style="color:var(--primary)">3 Punkte</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span>Richtige Tendenz (Sieg/Unentschieden/Niederlage)</span>
+        <strong style="color:var(--accent)">1 Punkt</strong>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0">
+        <span>Falsch getippt</span>
+        <strong style="color:var(--muted)">0 Punkte</strong>
       </div>
     </div>
-    <div class="card" style="padding:20px;" id="statusCard">
-      <div class="card-title">📊 Dein Status</div>
-      <div id="myStatus" style="color:var(--muted); font-size:0.88rem;">Melde dich an, um deinen Status zu sehen.</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">👥 Teilnehmer</div>
-    <div id="participantOverview"></div>
   </div>
 </div>
 
 <!-- TIPPS -->
 <div class="page" id="page-tipps">
-  <div class="card" style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+  <div class="card" style="padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
     <div>
-      <strong id="tippsTitle">Meine Tipps</strong>
-      <div style="font-size:0.8rem; color:var(--muted); margin-top:2px;" id="tippsProgress"></div>
+      <strong id="tippsHeading">Meine Tipps</strong>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:2px" id="tippsSubline"></div>
     </div>
-    <div class="filter-row" style="margin:0;">
-      <button class="filter-btn active" onclick="setTipFilter('all', this)">Alle</button>
-      <button class="filter-btn" onclick="setTipFilter('open', this)">Offen</button>
-      <button class="filter-btn" onclick="setTipFilter('done', this)">Getippt</button>
+    <div class="filter-row" style="margin:0">
+      <button class="fb on" onclick="tipFilter('all',this)">Alle</button>
+      <button class="fb" onclick="tipFilter('open',this)">Noch offen</button>
+      <button class="fb" onclick="tipFilter('done',this)">Getippt</button>
     </div>
   </div>
   <div id="tippsContent"></div>
-  <div class="save-bar hidden" id="saveBar">
-    <span>⚡ Nicht gespeicherte Tipps</span>
-    <button class="btn btn-accent" onclick="saveTips()">Alles speichern</button>
-  </div>
 </div>
 
 <!-- TABELLE -->
 <div class="page" id="page-tabelle">
   <div class="card">
     <div class="card-title">🏆 Gesamtranking</div>
-    <div id="tabelleContent"></div>
+    <div id="rankingContent"></div>
   </div>
-
-  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;" id="groupTables"></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px" id="groupTablesWrap"></div>
 </div>
 
 <!-- ALLE TIPPS -->
 <div class="page" id="page-alle">
-  <div class="card" style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+  <div class="card" style="padding:14px 16px;margin-bottom:14px">
     <strong>Alle Tipps im Vergleich</strong>
-    <div class="filter-row" style="margin:0;" id="alleFilter">
-      <button class="filter-btn active" onclick="setAlleFilter('all', this)">Alle Gruppen</button>
+    <div class="filter-row" style="margin-top:10px;margin-bottom:0" id="alleFilterRow">
+      <button class="fb on" onclick="alleFilter('all',this)">Alle</button>
     </div>
   </div>
   <div id="alleContent"></div>
@@ -421,639 +344,472 @@
 <div class="page" id="page-admin">
   <div class="card">
     <div class="card-title">🔧 Ergebnisse eintragen</div>
-    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:16px;">
-      Hier können die tatsächlichen Spielergebnisse eingetragen werden. Diese werden für die Punktewertung verwendet.
-    </p>
-    <div class="form-group">
-      <label>Admin-Passwort</label>
-      <div style="display:flex; gap:8px;">
-        <input class="form-control" type="password" id="adminPw" placeholder="Passwort..." style="max-width:220px;">
-        <button class="btn btn-primary" onclick="unlockAdmin()">Freischalten</button>
-      </div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Hier werden die echten Spielergebnisse eingegeben. Diese zählen für die Punkte aller Teilnehmer.</p>
+    <div style="display:flex;gap:8px;margin-bottom:0" id="adminLock">
+      <input class="score-in" type="password" id="adminPw" placeholder="Passwort" style="width:160px;height:40px;font-size:.9rem;font-weight:normal;text-align:left;padding:0 10px">
+      <button class="btn btn-primary" onclick="unlockAdmin()">Freischalten</button>
     </div>
-    <div id="adminContent" style="display:none; margin-top:16px;"></div>
+    <div id="adminContent" style="display:none;margin-top:16px"></div>
   </div>
 </div>
 
+</div><!-- #app -->
+
+<!-- Save strip & toast -->
+<div class="save-strip" id="saveStrip"></div>
+<div class="toast" id="toast"></div>
+
 <script>
-// ─── DATA ────────────────────────────────────────────────────────────────────
-
-const GROUPS = {
-  A: { teams: ['Mexiko', 'Südkorea', 'Südafrika', 'Tschechien'] },
-  B: { teams: ['Kanada', 'Schweiz', 'Katar', 'Bosnien-Herzegowina'] },
-  C: { teams: ['Brasilien', 'Marokko', 'Schottland', 'Haiti'] },
-  D: { teams: ['USA', 'Paraguay', 'Australien', 'Türkei'] },
-  E: { teams: ['Deutschland', 'Elfenbeinküste', 'Ecuador', 'Curaçao'] },
-  F: { teams: ['Niederlande', 'Japan', 'Tunesien', 'Schweden'] },
-  G: { teams: ['Belgien', 'Ägypten', 'Iran', 'Neuseeland'] },
-  H: { teams: ['Spanien', 'Kap Verde', 'Saudi-Arabien', 'Uruguay'] },
-  I: { teams: ['Frankreich', 'Senegal', 'Irak', 'Norwegen'] },
-  J: { teams: ['Argentinien', 'Österreich', 'Algerien', 'Jordanien'] },
-  K: { teams: ['Portugal', 'Kolumbien', 'Usbekistan', 'DR Kongo'] },
-  L: { teams: ['England', 'Kroatien', 'Ghana', 'Panama'] },
+// ═══ FIREBASE CONFIG ══════════════════════════════════════════════════════════
+// Ersetze die Platzhalter mit deiner Firebase-Konfiguration:
+const firebaseConfig = {
+  apiKey: "DEIN_API_KEY",
+  authDomain: "DEIN_PROJECT.firebaseapp.com",
+  databaseURL: "https://DEIN_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "DEIN_PROJECT",
+  storageBucket: "DEIN_PROJECT.appspot.com",
+  messagingSenderId: "DEINE_SENDER_ID",
+  appId: "DEINE_APP_ID"
 };
-
-const AVATARS = ['🦁','🐯','🦊','🐺','🦅','🐉','🦋','🌟','🔥','⚡','🌊','🎯'];
-
-// Generate all group stage matches
-function buildMatches() {
-  const matches = [];
-  let id = 1;
-  Object.entries(GROUPS).forEach(([group, g]) => {
-    const t = g.teams;
-    const combos = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
-    combos.forEach(([a, b]) => {
-      matches.push({ id: id++, group, team1: t[a], team2: t[b] });
-    });
-  });
-  return matches;
-}
-
-const MATCHES = buildMatches(); // 72 group stage matches
+// ═════════════════════════════════════════════════════════════════════════════
 
 const ADMIN_PW = 'wm2026';
-const MAX_PARTICIPANTS = 6;
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
+const PARTICIPANTS = [
+  { name: 'Anja',  av: '👩' },
+  { name: 'Hatti', av: '🧔' },
+  { name: 'Oma',   av: '👵' },
+  { name: 'Opa',   av: '👴' },
+  { name: 'Eric',  av: '🧑' },
+  { name: 'Max',   av: '👦' },
+  { name: 'Mika',  av: '🧒' },
+  { name: 'Mune',  av: '🌟' },
+];
 
-let state = {
-  participants: [], // [{id, name, avatar}]
-  results: {},      // matchId -> {g1, g2}
-  tips: {},         // userId -> matchId -> {g1, g2}
-  currentUser: null,
-  adminUnlocked: false,
-  tipFilter: 'all',
-  alleFilter: 'all',
-  unsaved: false,
+const GROUPS = {
+  A: ['Mexiko','Südkorea','Südafrika','Tschechien'],
+  B: ['Kanada','Schweiz','Katar','Bosnien-Herzegowina'],
+  C: ['Brasilien','Marokko','Schottland','Haiti'],
+  D: ['USA','Paraguay','Australien','Türkei'],
+  E: ['Deutschland','Elfenbeinküste','Ecuador','Curaçao'],
+  F: ['Niederlande','Japan','Tunesien','Schweden'],
+  G: ['Belgien','Ägypten','Iran','Neuseeland'],
+  H: ['Spanien','Kap Verde','Saudi-Arabien','Uruguay'],
+  I: ['Frankreich','Senegal','Irak','Norwegen'],
+  J: ['Argentinien','Österreich','Algerien','Jordanien'],
+  K: ['Portugal','Kolumbien','Usbekistan','DR Kongo'],
+  L: ['England','Kroatien','Ghana','Panama'],
 };
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem('wm2026_state');
-    if (raw) {
-      const saved = JSON.parse(raw);
-      state = { ...state, ...saved, adminUnlocked: false, unsaved: false };
-    }
-  } catch(e) {}
+// Build 72 group-stage matches
+const MATCHES = (() => {
+  const list = [];
+  let id = 1;
+  const pairs = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+  Object.entries(GROUPS).forEach(([g, teams]) => {
+    pairs.forEach(([a, b]) => list.push({ id: id++, group: g, t1: teams[a], t2: teams[b] }));
+  });
+  return list;
+})();
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let db = null;
+let tips = {};      // { name: { matchId: {g1,g2} } }
+let results = {};   // { matchId: {g1,g2} }
+let currentUser = localStorage.getItem('wm2026_user') || null;
+let tipFilterVal = 'all';
+let alleFilterVal = 'all';
+let adminUnlocked = false;
+let saveTimer = null;
+
+// ─── FIREBASE INIT ────────────────────────────────────────────────────────────
+function boot() {
+  if (firebaseConfig.apiKey === 'DEIN_API_KEY') {
+    document.getElementById('setupScreen').style.display = 'block';
+    return;
+  }
+  document.getElementById('app').style.display = 'block';
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+
+  // Connection indicator
+  db.ref('.info/connected').on('value', snap => {
+    const el = document.getElementById('connDot');
+    if (snap.val()) { el.classList.remove('off'); el.title = 'Verbunden'; }
+    else { el.classList.add('off'); el.title = 'Keine Verbindung'; }
+  });
+
+  // Real-time sync: all game data
+  db.ref('wm2026').on('value', snap => {
+    const data = snap.val() || {};
+    results = data.results || {};
+    tips = data.tips || {};
+    renderCurrentPage();
+    updateHeader();
+  });
+
+  updateHeader();
+  renderLogin();
 }
 
-function saveState() {
-  const toSave = {
-    participants: state.participants,
-    results: state.results,
-    tips: state.tips,
-    currentUser: state.currentUser,
-  };
-  localStorage.setItem('wm2026_state', JSON.stringify(toSave));
+// ─── AUTO-SAVE ────────────────────────────────────────────────────────────────
+function scheduleSave() {
+  showStrip('saving', '⏳ Wird gespeichert…');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(flushSave, 1500);
 }
 
-// ─── SCORING ─────────────────────────────────────────────────────────────────
-
-function getTendency(g1, g2) {
-  if (g1 > g2) return 'W';
-  if (g1 < g2) return 'L';
-  return 'D';
+function flushSave() {
+  if (!currentUser || !db) return;
+  db.ref(`wm2026/tips/${currentUser}`).set(tips[currentUser] || {}, err => {
+    if (err) { showStrip('error', '❌ Fehler beim Speichern'); setTimeout(hideStrip, 3000); }
+    else { showStrip('ok', '✅ Gespeichert!'); setTimeout(hideStrip, 2000); }
+  });
 }
 
-function calcPoints(tip, result) {
-  if (!tip || !result) return null;
-  if (tip.g1 === result.g1 && tip.g2 === result.g2) return 3;
-  if (getTendency(tip.g1, tip.g2) === getTendency(result.g1, result.g2)) return 1;
+function showStrip(type, msg) {
+  const el = document.getElementById('saveStrip');
+  el.textContent = msg;
+  el.className = 'save-strip show' + (type === 'saving' ? ' saving' : '');
+}
+function hideStrip() {
+  document.getElementById('saveStrip').classList.remove('show');
+}
+
+// ─── SCORING ──────────────────────────────────────────────────────────────────
+function tendency(g1, g2) { return g1 > g2 ? 'W' : g1 < g2 ? 'L' : 'D'; }
+function calcPts(tip, res) {
+  if (!tip || !res || tip.g1 == null || tip.g2 == null) return null;
+  if (tip.g1 === res.g1 && tip.g2 === res.g2) return 3;
+  if (tendency(+tip.g1, +tip.g2) === tendency(+res.g1, +res.g2)) return 1;
   return 0;
 }
-
-function getUserPoints(userId) {
-  const userTips = state.tips[userId] || {};
-  let total = 0, exact = 0, tend = 0, scored = 0;
+function userStats(name) {
+  const ut = tips[name] || {};
+  let pts = 0, exact = 0, tend = 0, counted = 0, tipped = 0;
   MATCHES.forEach(m => {
-    const res = state.results[m.id];
+    const k = String(m.id);
+    const tip = ut[k];
+    if (tip && tip.g1 != null) tipped++;
+    const res = results[k];
     if (!res) return;
-    const tip = userTips[m.id];
-    const pts = calcPoints(tip, res);
-    if (pts !== null) {
-      scored++;
-      total += pts;
-      if (pts === 3) exact++;
-      if (pts === 1) tend++;
-    }
+    const p = calcPts(tip, res);
+    if (p === null) return;
+    counted++; pts += p;
+    if (p === 3) exact++;
+    if (p === 1) tend++;
   });
-  const tipped = Object.values(userTips).filter(t => t.g1 !== '' && t.g2 !== '').length;
-  return { total, exact, tend, scored, tipped };
+  return { pts, exact, tend, counted, tipped };
+}
+function getRankings() {
+  return PARTICIPANTS
+    .map(p => ({ ...p, ...userStats(p.name) }))
+    .sort((a, b) => b.pts - a.pts || b.exact - a.exact);
 }
 
-function getSortedStandings() {
-  return [...state.participants]
-    .map(p => ({ ...p, ...getUserPoints(p.id) }))
-    .sort((a, b) => b.total - a.total || b.exact - a.exact);
-}
-
-// ─── UI HELPERS ──────────────────────────────────────────────────────────────
-
-function showPage(name) {
+// ─── ROUTING ──────────────────────────────────────────────────────────────────
+function goTo(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  const btns = document.querySelectorAll('.nav-btn');
-  const pages = ['start','tipps','tabelle','alle','admin'];
-  btns[pages.indexOf(name)]?.classList.add('active');
-  renderPage(name);
+  document.getElementById('page-' + page).classList.add('active');
+  const pages = ['login','tipps','tabelle','alle','admin'];
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const idx = pages.indexOf(page);
+  if (idx >= 0) navBtns[idx]?.classList.add('active');
+  renderPage(page);
 }
-
-function renderPage(name) {
-  if (name === 'start') renderStart();
-  if (name === 'tipps') renderTipps();
-  if (name === 'tabelle') renderTabelle();
-  if (name === 'alle') renderAlle();
-  if (name === 'admin') renderAdmin();
-}
-
-function toast(msg, duration=2800) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), duration);
-}
-
-// ─── LOGIN ────────────────────────────────────────────────────────────────────
-
-let pendingSlot = null;
-
-function showLogin() {
-  const modal = document.getElementById('loginModal');
-  modal.classList.remove('hidden');
-  renderLoginGrid();
-}
-
-function hideLogin() {
-  document.getElementById('loginModal').classList.add('hidden');
-  document.getElementById('nameEntry').style.display = 'none';
-}
-
-function renderLoginGrid() {
-  const grid = document.getElementById('loginGrid');
-  grid.innerHTML = '';
-
-  // Existing participants
-  state.participants.forEach(p => {
-    const pts = getUserPoints(p.id);
-    const btn = document.createElement('div');
-    btn.className = 'participant-btn';
-    btn.innerHTML = `
-      <div class="avatar">${p.avatar}</div>
-      <div class="pname">${p.name}</div>
-      <div class="pscore">${pts.total} Punkte</div>
-    `;
-    btn.onclick = () => { selectUser(p.id); hideLogin(); };
-    grid.appendChild(btn);
-  });
-
-  // Add slot if < 6
-  if (state.participants.length < MAX_PARTICIPANTS) {
-    const btn = document.createElement('div');
-    btn.className = 'participant-btn';
-    btn.innerHTML = `<div class="avatar">➕</div><div class="pname">Neu registrieren</div>`;
-    btn.onclick = () => showNameEntry('new');
-    grid.appendChild(btn);
-  }
-
-  // Viewer
-  const vbtn = document.createElement('div');
-  vbtn.className = 'participant-btn viewer';
-  vbtn.innerHTML = `<div class="avatar">👁️</div><div class="pname">Nur ansehen</div><div class="pscore">Kein Tippen</div>`;
-  vbtn.onclick = () => { selectUser(null); hideLogin(); };
-  grid.appendChild(vbtn);
-}
-
-function showNameEntry(slotId) {
-  pendingSlot = slotId;
-  document.getElementById('loginGrid').style.display = 'none';
-  document.getElementById('nameEntry').style.display = 'block';
-  document.getElementById('nameInput').value = '';
-  document.getElementById('nameInput').focus();
-}
-
-function cancelNameEntry() {
-  document.getElementById('loginGrid').style.display = 'grid';
-  document.getElementById('nameEntry').style.display = 'none';
-}
-
-function confirmName() {
-  const name = document.getElementById('nameInput').value.trim();
-  if (!name) { toast('Bitte Namen eingeben!'); return; }
-  const avatar = AVATARS[state.participants.length % AVATARS.length];
-  const id = 'user_' + Date.now();
-  state.participants.push({ id, name, avatar });
-  state.tips[id] = {};
-  saveState();
-  selectUser(id);
-  hideLogin();
-}
-
-function selectUser(userId) {
-  state.currentUser = userId;
-  const user = state.participants.find(p => p.id === userId);
-  document.getElementById('userName').textContent = user ? user.name : 'Zuschauer';
-  document.getElementById('userIcon').textContent = user ? user.avatar : '👁️';
-  saveState();
-  renderPage(getCurrentPage());
-  updateMyStatus();
-}
-
 function getCurrentPage() {
-  const active = document.querySelector('.page.active');
-  return active?.id.replace('page-', '') || 'start';
+  const el = document.querySelector('.page.active');
+  return el ? el.id.replace('page-','') : 'login';
+}
+function renderCurrentPage() { renderPage(getCurrentPage()); }
+function renderPage(p) {
+  if (p === 'login')   renderLogin();
+  if (p === 'tipps')   renderTipps();
+  if (p === 'tabelle') renderTabelle();
+  if (p === 'alle')    renderAlle();
+  if (p === 'admin' && adminUnlocked) renderAdminMatches();
 }
 
-// ─── START PAGE ───────────────────────────────────────────────────────────────
-
-function renderStart() {
-  updateMyStatus();
-  renderParticipantOverview();
+function showLoginPage() { goTo('login'); }
+function updateHeader() {
+  const p = PARTICIPANTS.find(x => x.name === currentUser);
+  document.getElementById('headerAvatar').textContent = p ? p.av : '👤';
+  document.getElementById('headerName').textContent = p ? p.name : 'Anmelden';
 }
 
-function updateMyStatus() {
-  const el = document.getElementById('myStatus');
-  if (!state.currentUser) {
-    el.innerHTML = '<span style="color:var(--muted)">Melde dich an, um deinen Status zu sehen.</span>';
-    return;
+// ─── LOGIN PAGE ───────────────────────────────────────────────────────────────
+function renderLogin() {
+  const grid = document.getElementById('loginGrid');
+  const rankings = getRankings();
+  grid.innerHTML = PARTICIPANTS.map(p => {
+    const s = userStats(p.name);
+    const isMe = p.name === currentUser;
+    return `<div class="name-btn${isMe?' active':''}" onclick="selectUser('${p.name}')"
+      style="${isMe?'border-color:var(--primary);background:#f0f7ff':''}">
+      <div class="av">${p.av}</div>
+      <div class="nm">${p.name}</div>
+      <div class="pts">${s.pts} Pkt · ${s.tipped}/${MATCHES.length}</div>
+    </div>`;
+  }).join('') +
+  `<div class="name-btn viewer" onclick="selectUser(null)">
+    <div class="av">👁️</div><div class="nm">Nur ansehen</div><div class="pts">Kein Tippen</div>
+  </div>`;
+
+  // My status card
+  if (currentUser) {
+    const p = PARTICIPANTS.find(x => x.name === currentUser);
+    const s = userStats(currentUser);
+    const pct = Math.round((s.tipped / MATCHES.length) * 100);
+    const rank = rankings.findIndex(r => r.name === currentUser) + 1;
+    document.getElementById('myStatusCard').style.display = 'block';
+    document.getElementById('myStatusTitle').textContent = `${p.av} ${p.name} — Dein Status`;
+    document.getElementById('myStatusBody').innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div>
+          <span style="font-size:1.6rem;font-weight:800;color:var(--primary)">${s.pts}</span>
+          <span style="color:var(--muted);font-size:.85rem"> Punkte · Platz ${rank} von ${PARTICIPANTS.length}</span>
+        </div>
+        <button class="btn btn-primary" onclick="goTo('tipps')" style="font-size:.85rem;padding:8px 16px">✏️ Tipps eingeben</button>
+      </div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">Fortschritt: ${s.tipped} von ${MATCHES.length} Spielen getippt</div>
+      <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+    `;
+  } else {
+    document.getElementById('myStatusCard').style.display = 'none';
   }
-  const user = state.participants.find(p => p.id === state.currentUser);
-  if (!user) return;
-  const pts = getUserPoints(state.currentUser);
-  const totalMatches = MATCHES.length;
-  const pct = Math.round((pts.tipped / totalMatches) * 100);
-  el.innerHTML = `
-    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-      <span>${user.avatar} <strong>${user.name}</strong></span>
-      <span><strong style="color:var(--primary)">${pts.total} Pkt.</strong></span>
-    </div>
-    <div style="font-size:0.8rem; color:var(--muted);">
-      Getippt: ${pts.tipped} / ${totalMatches} Spiele
-    </div>
-    <div class="progress-bar-wrap" style="margin-top:8px">
-      <div class="progress-bar" style="width:${pct}%"></div>
-    </div>
-    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">${pct}% vollständig</div>
-  `;
 }
 
-function renderParticipantOverview() {
-  const el = document.getElementById('participantOverview');
-  if (!state.participants.length) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:0.88rem;">Noch keine Teilnehmer registriert. <a href="#" onclick="showLogin();return false;">Jetzt anmelden</a></div>';
-    return;
-  }
-  const standings = getSortedStandings();
-  el.innerHTML = `<table class="standings-table">
-    <thead><tr><th>#</th><th>Name</th><th>Tipps</th><th>Exakt</th><th>Tendenz</th><th>Punkte</th></tr></thead>
-    <tbody>${standings.map((p, i) => `
-      <tr>
-        <td class="rank ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
-        <td>${p.avatar} <strong>${p.name}</strong></td>
-        <td>${p.tipped}/${MATCHES.length}</td>
-        <td><span class="chip chip-exact">✓ ${p.exact}</span></td>
-        <td><span class="chip chip-tend">~ ${p.tend}</span></td>
-        <td class="pts">${p.total}</td>
-      </tr>
-    `).join('')}</tbody>
-  </table>`;
+function selectUser(name) {
+  currentUser = name;
+  if (name) localStorage.setItem('wm2026_user', name);
+  else localStorage.removeItem('wm2026_user');
+  updateHeader();
+  renderLogin();
+  if (name) { toast(`👋 Hallo ${name}!`); goTo('tipps'); }
 }
 
 // ─── TIPPS PAGE ───────────────────────────────────────────────────────────────
-
-let tipChanges = {};
-
 function renderTipps() {
-  if (!state.currentUser) {
-    document.getElementById('tippsContent').innerHTML = `
-      <div class="empty-state">
-        <div class="icon">✏️</div>
-        <p>Melde dich an, um Tipps einzugeben.</p>
-        <button class="btn btn-primary" style="margin-top:16px" onclick="showLogin()">Anmelden</button>
-      </div>`;
-    document.getElementById('saveBar').classList.add('hidden');
+  if (!currentUser) {
+    document.getElementById('tippsContent').innerHTML = `<div class="empty"><div class="ei">✏️</div><p>Melde dich an, um Tipps einzugeben.</p><button class="btn btn-primary" style="margin-top:14px" onclick="goTo('login')">Anmelden</button></div>`;
     return;
   }
+  const p = PARTICIPANTS.find(x => x.name === currentUser);
+  const s = userStats(currentUser);
+  document.getElementById('tippsHeading').textContent = `${p.av} ${p.name} — Meine Tipps`;
+  document.getElementById('tippsSubline').textContent = `${s.tipped} von ${MATCHES.length} getippt · ${s.pts} Punkte`;
 
-  const user = state.participants.find(p => p.id === state.currentUser);
-  const userTips = state.tips[state.currentUser] || {};
-  const pts = getUserPoints(state.currentUser);
-  document.getElementById('tippsTitle').textContent = `${user.avatar} ${user.name} – Meine Tipps`;
-  document.getElementById('tippsProgress').textContent =
-    `${pts.tipped} von ${MATCHES.length} Spielen getippt · ${pts.total} Punkte`;
-
-  tipChanges = {};
-  const filter = state.tipFilter;
+  const ut = tips[currentUser] || {};
   let html = '';
-
-  Object.entries(GROUPS).forEach(([group, g]) => {
-    const groupMatches = MATCHES.filter(m => m.group === group);
-    const visibleMatches = groupMatches.filter(m => {
-      if (filter === 'open') return !userTips[m.id];
-      if (filter === 'done') return !!userTips[m.id];
+  Object.entries(GROUPS).forEach(([g, teams]) => {
+    const gMatches = MATCHES.filter(m => m.group === g);
+    const visible = gMatches.filter(m => {
+      if (tipFilterVal === 'open') return !ut[String(m.id)] || ut[String(m.id)].g1 == null;
+      if (tipFilterVal === 'done') return ut[String(m.id)] && ut[String(m.id)].g1 != null;
       return true;
     });
-    if (!visibleMatches.length) return;
-
-    html += `<div class="group-section">
-      <div class="group-header">Gruppe ${group}: ${g.teams.join(' · ')}</div>`;
-
-    visibleMatches.forEach(m => {
-      const tip = userTips[m.id] || {};
-      const res = state.results[m.id];
-      const pts2 = res && tip.g1 !== undefined ? calcPoints(tip, res) : null;
-      const chipHtml = pts2 === 3 ? '<span class="chip chip-exact">✓ 3</span>' :
-                       pts2 === 1 ? '<span class="chip chip-tend">~ 1</span>' :
-                       pts2 === 0 ? '<span class="chip chip-miss">✗ 0</span>' : '';
-      html += `<div class="match-row ${res ? 'has-result' : ''}">
-        <div class="team-name">${m.team1}</div>
+    if (!visible.length) return;
+    html += `<div class="group-block"><div class="group-head">Gruppe ${g}: ${teams.join(' · ')}</div>`;
+    visible.forEach(m => {
+      const k = String(m.id);
+      const tip = ut[k] || {};
+      const res = results[k];
+      const pts = res ? calcPts(tip, res) : null;
+      const chipHtml = pts === 3 ? '<span class="chip chip-3">✓ 3 Pkt</span>' :
+                       pts === 1 ? '<span class="chip chip-1">~ 1 Pkt</span>' :
+                       pts === 0 ? '<span class="chip chip-0">✗ 0 Pkt</span>' : '';
+      html += `<div class="match-row${res?' settled':''}">
+        <div class="t-name">${m.t1}</div>
         <div>
-          <div class="score-input-wrap">
-            <input class="score-input" type="number" min="0" max="99"
-              value="${tip.g1 !== undefined ? tip.g1 : ''}"
-              data-mid="${m.id}" data-side="g1"
-              onchange="onTipChange(${m.id},'g1',this.value)"
-              ${res ? 'readonly' : ''}>
-            <span class="score-sep">:</span>
-            <input class="score-input" type="number" min="0" max="99"
-              value="${tip.g2 !== undefined ? tip.g2 : ''}"
-              data-mid="${m.id}" data-side="g2"
-              onchange="onTipChange(${m.id},'g2',this.value)"
-              ${res ? 'readonly' : ''}>
+          <div class="score-wrap">
+            <input class="score-in" type="number" min="0" max="30"
+              value="${tip.g1 != null ? tip.g1 : ''}" placeholder="?"
+              ${res ? 'readonly' : ''}
+              oninput="onTipInput(${m.id},'g1',this.value)">
+            <span class="sep">:</span>
+            <input class="score-in" type="number" min="0" max="30"
+              value="${tip.g2 != null ? tip.g2 : ''}" placeholder="?"
+              ${res ? 'readonly' : ''}
+              oninput="onTipInput(${m.id},'g2',this.value)">
           </div>
-          ${res ? `<div class="match-date">Ergebnis: ${res.g1}:${res.g2} ${chipHtml}</div>` : '<div class="match-date">—</div>'}
+          <div class="result-row">${res ? `Ergebnis: ${res.g1}:${res.g2} ${chipHtml}` : '—'}</div>
         </div>
-        <div class="team-name team-right">${m.team2}</div>
+        <div class="t-name t-right">${m.t2}</div>
       </div>`;
     });
     html += '</div>';
   });
-
-  document.getElementById('tippsContent').innerHTML = html || '<div class="empty-state"><div class="icon">✅</div><p>Keine Spiele in dieser Ansicht.</p></div>';
+  document.getElementById('tippsContent').innerHTML = html || `<div class="empty"><div class="ei">✅</div><p>Keine Spiele in dieser Ansicht.</p></div>`;
 }
 
-function onTipChange(matchId, side, value) {
-  if (!tipChanges[matchId]) tipChanges[matchId] = {};
-  tipChanges[matchId][side] = parseInt(value) || 0;
-  state.unsaved = true;
-  document.getElementById('saveBar').classList.remove('hidden');
+function onTipInput(matchId, side, val) {
+  if (!currentUser) return;
+  if (!tips[currentUser]) tips[currentUser] = {};
+  const k = String(matchId);
+  if (!tips[currentUser][k]) tips[currentUser][k] = {};
+  tips[currentUser][k][side] = val === '' ? null : parseInt(val);
+  scheduleSave();
 }
 
-function saveTips() {
-  if (!state.currentUser) return;
-  if (!state.tips[state.currentUser]) state.tips[state.currentUser] = {};
-  const userTips = state.tips[state.currentUser];
-
-  Object.entries(tipChanges).forEach(([mid, t]) => {
-    if (!userTips[mid]) userTips[mid] = {};
-    if (t.g1 !== undefined) userTips[mid].g1 = t.g1;
-    if (t.g2 !== undefined) userTips[mid].g2 = t.g2;
-  });
-
-  // Also sync from current inputs
-  document.querySelectorAll('.score-input[data-mid]').forEach(inp => {
-    if (inp.readOnly) return;
-    const mid = inp.dataset.mid;
-    const side = inp.dataset.side;
-    const val = parseInt(inp.value);
-    if (!isNaN(val)) {
-      if (!userTips[mid]) userTips[mid] = {};
-      userTips[mid][side] = val;
-    }
-  });
-
-  tipChanges = {};
-  state.unsaved = false;
-  saveState();
-  document.getElementById('saveBar').classList.add('hidden');
-  toast('✅ Tipps gespeichert!');
+function tipFilter(val, el) {
+  tipFilterVal = val;
+  document.querySelectorAll('#page-tipps .fb').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
   renderTipps();
 }
 
-function setTipFilter(val, el) {
-  state.tipFilter = val;
-  document.querySelectorAll('#page-tipps .filter-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  renderTipps();
-}
-
-// ─── TABELLE PAGE ─────────────────────────────────────────────────────────────
-
+// ─── TABELLE ──────────────────────────────────────────────────────────────────
 function renderTabelle() {
-  const standings = getSortedStandings();
-  const el = document.getElementById('tabelleContent');
+  const rankings = getRankings();
+  const maxPts = Math.max(1, ...rankings.map(r => r.pts));
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('rankingContent').innerHTML = `
+    <table class="standings">
+      <thead><tr><th>#</th><th>Name</th><th>Tipps</th><th>Exakt</th><th>Tendenz</th><th>Punkte</th></tr></thead>
+      <tbody>${rankings.map((r, i) => `
+        <tr>
+          <td class="medal">${medals[i] || (i+1)}</td>
+          <td>${r.av} <strong>${r.name}</strong>${r.name===currentUser?' <span style="font-size:.7rem;background:var(--accent);color:white;padding:1px 6px;border-radius:8px">Du</span>':''}</td>
+          <td style="font-size:.82rem;color:var(--muted)">${r.tipped}/${MATCHES.length}</td>
+          <td><span class="chip chip-3">✓ ${r.exact}</span></td>
+          <td><span class="chip chip-1">~ ${r.tend}</span></td>
+          <td>
+            <span class="pts-big">${r.pts}</span>
+            <span class="bar-wrap"><span class="bar-fill" style="width:${Math.round(r.pts/maxPts*100)}%"></span></span>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
 
-  if (!standings.length) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:0.88rem;">Noch keine Teilnehmer.</div>';
-    return;
-  }
-
-  const maxPts = standings[0].total || 1;
-  el.innerHTML = `<table class="standings-table">
-    <thead><tr>
-      <th>#</th><th>Teilnehmer</th><th>Tipps</th>
-      <th title="Exakt richtig">3-Pkt</th>
-      <th title="Richtige Tendenz">1-Pkt</th>
-      <th title="Auswertete Spiele">Gespielt</th>
-      <th>Punkte</th>
-    </tr></thead>
-    <tbody>${standings.map((p, i) => `
-      <tr>
-        <td class="rank ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
-        <td>${p.avatar} <strong>${p.name}</strong>${p.id === state.currentUser ? ' <span style="font-size:0.75rem;background:var(--accent);color:white;padding:1px 6px;border-radius:8px">Du</span>' : ''}</td>
-        <td style="font-size:0.85rem;">${p.tipped}/${MATCHES.length}</td>
-        <td><span class="chip chip-exact">✓ ${p.exact}</span></td>
-        <td><span class="chip chip-tend">~ ${p.tend}</span></td>
-        <td style="font-size:0.85rem;color:var(--muted);">${p.scored}</td>
-        <td>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span class="pts">${p.total}</span>
-            <div class="progress-bar-wrap" style="width:80px;height:8px">
-              <div class="progress-bar" style="width:${Math.round((p.total/maxPts)*100)}%"></div>
-            </div>
-          </div>
-        </td>
-      </tr>
-    `).join('')}</tbody>
-  </table>`;
-
-  // Group standings mini tables
-  const gt = document.getElementById('groupTables');
-  gt.innerHTML = '';
-  Object.entries(GROUPS).forEach(([group, g]) => {
-    const groupMatches = MATCHES.filter(m => m.group === group);
-    const teams = g.teams.map(name => ({
-      name, w:0, d:0, l:0, gf:0, ga:0, pts:0
-    }));
-
-    groupMatches.forEach(m => {
-      const res = state.results[m.id];
+  // Group tables
+  const wrap = document.getElementById('groupTablesWrap');
+  wrap.innerHTML = '';
+  Object.entries(GROUPS).forEach(([g, teams]) => {
+    const rows = teams.map(name => ({ name, w:0,d:0,l:0,gf:0,ga:0,pts:0 }));
+    MATCHES.filter(m => m.group === g).forEach(m => {
+      const res = results[String(m.id)];
       if (!res) return;
-      const ti = teams.findIndex(t => t.name === m.team1);
-      const tj = teams.findIndex(t => t.name === m.team2);
-      if (ti < 0 || tj < 0) return;
-      teams[ti].gf += res.g1; teams[ti].ga += res.g2;
-      teams[tj].gf += res.g2; teams[tj].ga += res.g1;
-      if (res.g1 > res.g2) { teams[ti].w++; teams[ti].pts+=3; teams[tj].l++; }
-      else if (res.g1 < res.g2) { teams[tj].w++; teams[tj].pts+=3; teams[ti].l++; }
-      else { teams[ti].d++; teams[ti].pts++; teams[tj].d++; teams[tj].pts++; }
+      const a = rows.find(r => r.name === m.t1);
+      const b = rows.find(r => r.name === m.t2);
+      a.gf += +res.g1; a.ga += +res.g2;
+      b.gf += +res.g2; b.ga += +res.g1;
+      if (+res.g1 > +res.g2) { a.w++; a.pts+=3; b.l++; }
+      else if (+res.g1 < +res.g2) { b.w++; b.pts+=3; a.l++; }
+      else { a.d++; a.pts++; b.d++; b.pts++; }
     });
-
-    teams.sort((a,b) => b.pts - a.pts || (b.gf-b.ga)-(a.gf-a.ga) || b.gf - a.gf);
+    rows.sort((a,b) => b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga));
     const div = document.createElement('div');
-    div.className = 'card';
-    div.style.padding = '0';
-    div.innerHTML = `
-      <div class="group-header" style="border-radius:8px 8px 0 0">Gruppe ${group}</div>
-      <table class="standings-table">
+    div.className = 'card'; div.style.padding = '0';
+    div.innerHTML = `<div class="group-head" style="border-radius:10px 10px 0 0">Gruppe ${g}</div>
+      <table class="standings">
         <thead><tr><th>Team</th><th>Sp</th><th>Pkt</th><th>Tore</th></tr></thead>
-        <tbody>${teams.map(t => `
-          <tr>
-            <td>${t.name}</td>
-            <td>${t.w+t.d+t.l}</td>
-            <td><strong>${t.pts}</strong></td>
-            <td style="font-size:0.82rem;color:var(--muted)">${t.gf}:${t.ga}</td>
-          </tr>
-        `).join('')}</tbody>
+        <tbody>${rows.map(r => `<tr>
+          <td>${r.name}</td><td>${r.w+r.d+r.l}</td>
+          <td><strong>${r.pts}</strong></td>
+          <td style="font-size:.8rem;color:var(--muted)">${r.gf}:${r.ga}</td>
+        </tr>`).join('')}</tbody>
       </table>`;
-    gt.appendChild(div);
+    wrap.appendChild(div);
   });
 }
 
 // ─── ALLE TIPPS ───────────────────────────────────────────────────────────────
-
 function renderAlle() {
-  // Build group filter buttons
-  const filterEl = document.getElementById('alleFilter');
-  filterEl.innerHTML = `<button class="filter-btn ${state.alleFilter==='all'?'active':''}" onclick="setAlleFilter('all',this)">Alle</button>`;
+  const fr = document.getElementById('alleFilterRow');
+  fr.innerHTML = `<button class="fb ${alleFilterVal==='all'?'on':''}" onclick="alleFilter('all',this)">Alle</button>`;
   Object.keys(GROUPS).forEach(g => {
-    filterEl.innerHTML += `<button class="filter-btn ${state.alleFilter===g?'active':''}" onclick="setAlleFilter('${g}',this)">Gruppe ${g}</button>`;
+    fr.innerHTML += `<button class="fb ${alleFilterVal===g?'on':''}" onclick="alleFilter('${g}',this)">Gruppe ${g}</button>`;
   });
-
-  const el = document.getElementById('alleContent');
-  const filtered = state.alleFilter === 'all' ? MATCHES : MATCHES.filter(m => m.group === state.alleFilter);
-
-  el.innerHTML = filtered.map(m => {
-    const res = state.results[m.id];
+  const filtered = alleFilterVal === 'all' ? MATCHES : MATCHES.filter(m => m.group === alleFilterVal);
+  document.getElementById('alleContent').innerHTML = filtered.map(m => {
+    const k = String(m.id);
+    const res = results[k];
     const resHtml = res
-      ? `<div class="score-display"><span class="score-box">${res.g1}</span>:<span class="score-box">${res.g2}</span></div>`
-      : '<span style="color:var(--muted);font-size:0.8rem">Kein Ergebnis</span>';
-
-    const tipsHtml = state.participants.map(p => {
-      const tip = (state.tips[p.id] || {})[m.id];
-      const pts2 = res && tip ? calcPoints(tip, res) : null;
-      const chipCls = pts2 === 3 ? 'chip-exact' : pts2 === 1 ? 'chip-tend' : pts2 === 0 ? 'chip-miss' : 'chip-open';
+      ? `<div class="res-box"><span class="res-score">${res.g1}</span>:<span class="res-score">${res.g2}</span></div>`
+      : `<span style="font-size:.78rem;opacity:.6">Kein Ergebnis</span>`;
+    const cells = PARTICIPANTS.map(p => {
+      const tip = (tips[p.name] || {})[k];
+      const hasTip = tip && tip.g1 != null;
+      const pts = res && hasTip ? calcPts(tip, res) : null;
+      const chipCls = pts===3?'chip-3':pts===1?'chip-1':pts===0?'chip-0':'chip-open';
       return `<div class="tip-cell">
-        <div class="tip-name">${p.avatar} ${p.name}</div>
-        ${tip && tip.g1 !== undefined
-          ? `<div class="tip-score">${tip.g1} : ${tip.g2}</div>
-             <span class="chip ${chipCls}">${pts2===null?'—':pts2===3?'✓ 3 Pkt':pts2===1?'~ 1 Pkt':'✗ 0 Pkt'}</span>`
-          : `<div class="tip-score" style="color:var(--muted)">—</div>`
-        }
+        <div class="tip-who">${p.av} ${p.name}</div>
+        ${hasTip
+          ? `<div class="tip-val">${tip.g1} : ${tip.g2}</div>
+             <span class="chip ${chipCls}">${pts===null?'—':pts===3?'✓ 3':pts===1?'~ 1':'✗ 0'}</span>`
+          : `<div class="tip-val" style="color:var(--muted)">—</div>`}
       </div>`;
     }).join('');
-
-    return `<div class="tips-match-card">
-      <div class="tips-match-header">
-        <span class="teams">Gruppe ${m.group}: ${m.team1} vs. ${m.team2}</span>
-        ${resHtml}
+    return `<div class="all-match">
+      <div class="all-head">
+        <span class="teams">Gr. ${m.group}: ${m.t1} vs. ${m.t2}</span>${resHtml}
       </div>
-      <div class="tips-grid">${tipsHtml || '<div style="padding:12px;color:var(--muted);font-size:0.85rem">Noch keine Teilnehmer</div>'}</div>
+      <div class="tips-grid">${cells}</div>
     </div>`;
   }).join('');
 }
-
-function setAlleFilter(val, el) {
-  state.alleFilter = val;
-  document.querySelectorAll('#alleFilter .filter-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+function alleFilter(val, el) {
+  alleFilterVal = val;
+  document.querySelectorAll('#alleFilterRow .fb').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
   renderAlle();
 }
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────────
-
 function unlockAdmin() {
-  const pw = document.getElementById('adminPw').value;
-  if (pw === ADMIN_PW) {
-    state.adminUnlocked = true;
-    renderAdmin();
-  } else {
-    toast('❌ Falsches Passwort!');
-  }
+  if (document.getElementById('adminPw').value === ADMIN_PW) {
+    adminUnlocked = true;
+    document.getElementById('adminLock').style.display = 'none';
+    document.getElementById('adminContent').style.display = 'block';
+    renderAdminMatches();
+  } else { toast('❌ Falsches Passwort'); }
 }
-
-function renderAdmin() {
-  const el = document.getElementById('adminContent');
-  if (!state.adminUnlocked) return;
-  el.style.display = 'block';
-
-  let html = '<div style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;">';
-  html += '<button class="btn btn-accent" onclick="saveResults()">💾 Ergebnisse speichern</button>';
-  html += '</div>';
-
-  Object.entries(GROUPS).forEach(([group, g]) => {
-    const groupMatches = MATCHES.filter(m => m.group === group);
-    html += `<div class="group-section">
-      <div class="group-header">Gruppe ${group}: ${g.teams.join(' · ')}</div>`;
-    groupMatches.forEach(m => {
-      const res = state.results[m.id] || {};
-      html += `<div class="admin-match-row">
-        <div class="team-name">${m.team1}</div>
-        <div class="score-input-wrap">
-          <input class="score-input" type="number" min="0" max="99"
-            id="res_${m.id}_g1" value="${res.g1 !== undefined ? res.g1 : ''}" placeholder="?">
-          <span class="score-sep">:</span>
-          <input class="score-input" type="number" min="0" max="99"
-            id="res_${m.id}_g2" value="${res.g2 !== undefined ? res.g2 : ''}" placeholder="?">
+function renderAdminMatches() {
+  let html = `<button class="btn btn-accent" onclick="saveResults()" style="margin-bottom:16px">💾 Alles speichern</button>`;
+  Object.entries(GROUPS).forEach(([g, teams]) => {
+    html += `<div class="group-block"><div class="group-head">Gruppe ${g}: ${teams.join(' · ')}</div>`;
+    MATCHES.filter(m => m.group === g).forEach(m => {
+      const k = String(m.id); const res = results[k] || {};
+      html += `<div class="match-row">
+        <div class="t-name">${m.t1}</div>
+        <div class="score-wrap">
+          <input class="score-in" type="number" min="0" max="30" id="r${k}g1" value="${res.g1 != null?res.g1:''}" placeholder="?">
+          <span class="sep">:</span>
+          <input class="score-in" type="number" min="0" max="30" id="r${k}g2" value="${res.g2 != null?res.g2:''}" placeholder="?">
         </div>
-        <div class="team-name" style="text-align:right">${m.team2}</div>
+        <div class="t-name t-right">${m.t2}</div>
       </div>`;
     });
     html += '</div>';
   });
-
-  el.innerHTML = html;
+  document.getElementById('adminContent').innerHTML = html;
 }
-
 function saveResults() {
+  const newResults = { ...results };
   MATCHES.forEach(m => {
-    const g1el = document.getElementById(`res_${m.id}_g1`);
-    const g2el = document.getElementById(`res_${m.id}_g2`);
-    if (!g1el || !g2el) return;
-    const g1 = parseInt(g1el.value);
-    const g2 = parseInt(g2el.value);
-    if (!isNaN(g1) && !isNaN(g2)) {
-      state.results[m.id] = { g1, g2 };
+    const k = String(m.id);
+    const g1 = document.getElementById(`r${k}g1`)?.value;
+    const g2 = document.getElementById(`r${k}g2`)?.value;
+    if (g1 !== '' && g2 !== '' && g1 != null && g2 != null) {
+      newResults[k] = { g1: parseInt(g1), g2: parseInt(g2) };
     }
   });
-  saveState();
-  toast('✅ Ergebnisse gespeichert!');
-  renderPage('tabelle');
+  db.ref('wm2026/results').set(newResults, err => {
+    if (err) toast('❌ Fehler!');
+    else toast('✅ Ergebnisse gespeichert!');
+  });
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-
-loadState();
-
-if (state.currentUser) {
-  const user = state.participants.find(p => p.id === state.currentUser);
-  if (user) {
-    document.getElementById('userName').textContent = user.name;
-    document.getElementById('userIcon').textContent = user.avatar;
-  }
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
 }
 
-renderStart();
-
-// Keyboard: Enter in name field
-document.getElementById('nameInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') confirmName();
-});
-
-// Close modal on backdrop click
-document.getElementById('loginModal').addEventListener('click', function(e) {
-  if (e.target === this) hideLogin();
-});
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+boot();
 </script>
 </body>
 </html>
