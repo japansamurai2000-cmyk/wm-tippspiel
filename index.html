@@ -896,7 +896,7 @@ function saveResults() {
   });
   db.ref('wm2026/results').set(newResults, err => {
     if (err) toast('❌ Fehler!');
-    else toast('✅ Ergebnisse gespeichert!');
+    else toast(t('results_saved'));
   });
 }
 
