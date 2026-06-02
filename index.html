@@ -890,13 +890,13 @@ function renderAdminMatches() {
     MATCHES.filter(m => m.group === g).forEach(m => {
       const k = String(m.id); const res = results[k] || {};
       html += `<div class="match-row">
-        <div class="t-name">${m.t1}</div>
+        <div class="t-name">${tn(m.t1)}</div>
         <div class="score-wrap">
           <input class="score-in" type="number" min="0" max="30" id="r${k}g1" value="${res.g1 != null?res.g1:''}" placeholder="?">
           <span class="sep">:</span>
           <input class="score-in" type="number" min="0" max="30" id="r${k}g2" value="${res.g2 != null?res.g2:''}" placeholder="?">
         </div>
-        <div class="t-name t-right">${m.t2}</div>
+        <div class="t-name t-right">${tn(m.t2)}</div>
       </div>`;
     });
     html += '</div>';
