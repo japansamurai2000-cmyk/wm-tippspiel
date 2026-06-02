@@ -660,7 +660,7 @@ function renderTipps() {
       return true;
     });
     if (!visible.length) return;
-    html += `<div class="group-block"><div class="group-head">Gruppe ${g}: ${teams.join(' · ')}</div>`;
+    html += `<div class="group-block"><div class="group-head">${t('group_lbl')} ${g}: ${teams.join(' · ')}</div>`;
     visible.forEach(m => {
       const k = String(m.id);
       const tip = ut[k] || {};
@@ -867,7 +867,7 @@ function unlockAdmin() {
 function renderAdminMatches() {
   let html = `<button class="btn btn-accent" onclick="saveResults()" style="margin-bottom:16px">💾 Alles speichern</button>`;
   Object.entries(GROUPS).forEach(([g, teams]) => {
-    html += `<div class="group-block"><div class="group-head">Gruppe ${g}: ${teams.join(' · ')}</div>`;
+    html += `<div class="group-block"><div class="group-head">${t('group_lbl')} ${g}: ${teams.join(' · ')}</div>`;
     MATCHES.filter(m => m.group === g).forEach(m => {
       const k = String(m.id); const res = results[k] || {};
       html += `<div class="match-row">
