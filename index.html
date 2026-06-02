@@ -865,7 +865,7 @@ function unlockAdmin() {
   } else { toast(t('wrong_pw')); }
 }
 function renderAdminMatches() {
-  let html = `<button class="btn btn-accent" onclick="saveResults()" style="margin-bottom:16px">💾 Alles speichern</button>`;
+  let html = `<button class="btn btn-accent" onclick="saveResults()" style="margin-bottom:16px">${t('save_btn')}</button>`;
   Object.entries(GROUPS).forEach(([g, teams]) => {
     html += `<div class="group-block"><div class="group-head">${t('group_lbl')} ${g}: ${teams.join(' · ')}</div>`;
     MATCHES.filter(m => m.group === g).forEach(m => {
