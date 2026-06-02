@@ -906,6 +906,87 @@ function toast(msg) {
   setTimeout(() => el.classList.remove('show'), 2800);
 }
 
+// ─── TRANSLATIONS ─────────────────────────────────────────────────────────────
+const T = {
+  de: {
+    nav_start:'👋 Start', nav_tipps:'✏️ Meine Tipps', nav_tabelle:'🏆 Tabelle',
+    nav_alle:'📋 Alle Tipps', nav_admin:'🔧 Ergebnisse', nav_login:'Anmelden',
+    login_h:'Wer bist du?', login_hint:'Tippe deinen Namen an, um deine Tipps einzugeben.',
+    viewOnly:'Nur ansehen', noTipping:'Kein Tippen',
+    pts_title:'🎯 Punktesystem', pts_exact:'Exaktes Ergebnis (z.B. 2:1 getippt, 2:1 gespielt)',
+    pts_tend:'Richtige Tendenz (Sieg / Unentschieden / Niederlage)', pts_wrong:'Falsch getippt',
+    pts_3:'3 Punkte', pts_1:'1 Punkt', pts_0:'0 Punkte',
+    sched_title:'📅 Spielplan nach Datum', upcoming:'Bald', sched_all:'Alle',
+    today_lbl:'HEUTE', matches_lbl:'Spiele', no_matches:'Keine Spiele in diesem Zeitraum.',
+    filter_all:'Alle', filter_open:'Noch offen', filter_done:'Getippt',
+    no_result:'Kein Ergebnis', result_lbl:'Ergebnis',
+    login_to_tip:'Melde dich an, um Tipps einzugeben.', login_btn:'Anmelden',
+    ranking_title:'🏆 Gesamtranking',
+    col_name:'Name', col_tips:'Tipps', col_exact:'Exakt', col_tend:'Tendenz', col_pts:'Punkte',
+    admin_title:'🔧 Ergebnisse eintragen',
+    admin_hint:'Hier werden die echten Spielergebnisse eingegeben. Diese zählen für die Punkte aller Teilnehmer.',
+    pw_lbl:'Passwort', unlock_btn:'Freischalten', save_btn:'💾 Alles speichern',
+    wrong_pw:'❌ Falsches Passwort', results_saved:'✅ Ergebnisse gespeichert!',
+    saving:'⏳ Wird gespeichert…', saved:'✅ Gespeichert!', err_save:'❌ Fehler beim Speichern',
+    group_lbl:'Gruppe', status_title:'Dein Status',
+    tipped_of:'von', games_tipped:'Spielen getippt',
+    rank_lbl:'Platz', of_lbl:'von',
+    enter_tips:'✏️ Tipps eingeben', view_table:'Tabelle ansehen', login_now:'Jetzt anmelden',
+    alle_title:'Alle Tipps im Vergleich', gr_prefix:'Gr.',
+    hello:'Hallo', pct_complete:'% vollständig',
+    chip_3:'✓ 3', chip_1:'~ 1', chip_0:'✗ 0',
+  },
+  en: {
+    nav_start:'👋 Home', nav_tipps:'✏️ My Tips', nav_tabelle:'🏆 Standings',
+    nav_alle:'📋 All Tips', nav_admin:'🔧 Results', nav_login:'Log in',
+    login_h:'Who are you?', login_hint:'Tap your name to enter your predictions.',
+    viewOnly:'View only', noTipping:'No tipping',
+    pts_title:'🎯 Points System', pts_exact:'Exact score (e.g. predicted 2:1, result 2:1)',
+    pts_tend:'Correct tendency (win / draw / loss)', pts_wrong:'Wrong prediction',
+    pts_3:'3 points', pts_1:'1 point', pts_0:'0 points',
+    sched_title:'📅 Schedule by Date', upcoming:'Upcoming', sched_all:'All',
+    today_lbl:'TODAY', matches_lbl:'matches', no_matches:'No matches in this period.',
+    filter_all:'All', filter_open:'Not yet', filter_done:'Tipped',
+    no_result:'No result', result_lbl:'Result',
+    login_to_tip:'Log in to enter predictions.', login_btn:'Log in',
+    ranking_title:'🏆 Overall Standings',
+    col_name:'Name', col_tips:'Tips', col_exact:'Exact', col_tend:'Tendency', col_pts:'Points',
+    admin_title:'🔧 Enter Results',
+    admin_hint:"Enter the actual match results here. These count towards all participants' points.",
+    pw_lbl:'Password', unlock_btn:'Unlock', save_btn:'💾 Save all',
+    wrong_pw:'❌ Wrong password', results_saved:'✅ Results saved!',
+    saving:'⏳ Saving…', saved:'✅ Saved!', err_save:'❌ Error saving',
+    group_lbl:'Group', status_title:'Your Status',
+    tipped_of:'of', games_tipped:'games tipped',
+    rank_lbl:'Rank', of_lbl:'of',
+    enter_tips:'✏️ Enter tips', view_table:'View standings', login_now:'Log in now',
+    alle_title:'All Tips Compared', gr_prefix:'Gr.',
+    hello:'Hello', pct_complete:'% complete',
+    chip_3:'✓ 3', chip_1:'~ 1', chip_0:'✗ 0',
+  }
+};
+let lang = localStorage.getItem('wm2026_lang') || 'de';
+function t(k) { return T[lang][k] || T.de[k] || k; }
+
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  const navKeys = ['start','tipps','tabelle','alle','admin'];
+  navKeys.forEach(k => {
+    const btn = document.getElementById(`nav-${k}`);
+    if (btn) btn.textContent = t(`nav_${k}`);
+  });
+  const lb = document.getElementById('langBtn');
+  if (lb) lb.textContent = lang === 'de' ? 'EN' : 'DE';
+}
+
+function toggleLang() {
+  lang = lang === 'de' ? 'en' : 'de';
+  localStorage.setItem('wm2026_lang', lang);
+  applyLang();
+  renderCurrentPage();
+}
+
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
 boot();
 </script>
