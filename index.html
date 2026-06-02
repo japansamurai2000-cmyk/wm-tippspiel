@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WM 2026 Tippspiel</title>
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --accent: #e8a020;
+    --green: #2ecc71;
+    --red: #e74c3c;
+    --gray: #f4f6f9;
+    --border: #dde3ea;
+    --text: #1c2b3a;
+    --muted: #7a8fa6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, var(--primary) 0%, #0f2540 100%);
+    color: white; padding: 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .header-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon { font-size: 2rem; }
+  .logo-text h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 0.5px; }
+  .logo-text span { font-size: 0.8rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+  .user-badge {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 24px; padding: 8px 16px; cursor: pointer;
+    display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .user-badge:hover { background: rgba(255,255,255,0.18); }
+
+  /* Nav */
+  nav {
+    background: var(--primary);
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; gap: 0; overflow-x: auto;
+  }
+  .nav-btn {
+    padding: 12px 22px; color: rgba(255,255,255,0.65);
+    border: none; background: none; cursor: pointer;
+    font-size: 0.9rem; font-weight: 500;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { color: white; }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Pages */
+  .page { display: none; max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+  .page.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: white; border-radius: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    padding: 24px; margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 1.05rem; font-weight: 700; color: var(--primary);
+    margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .badge {
+    background: var(--primary); color: white;
+    padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+  }
+
+  /* Login page */
+  .login-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px; margin-top: 8px;
+  }
+  .participant-btn {
+    padding: 20px 16px; border-radius: 12px; border: 2px solid var(--border);
+    background: white; cursor: pointer; text-align: center;
+    transition: all 0.2s; font-size: 0.95rem;
+  }
+  .participant-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,58,92,0.12); }
+  .participant-btn .avatar { font-size: 2rem; margin-bottom: 8px; }
+  .participant-btn .pname { font-weight: 600; color: var(--text); }
+  .participant-btn .pscore { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .participant-btn.viewer { border-style: dashed; }
+
+  /* Match list */
+  .group-section { margin-bottom: 28px; }
+  .group-header {
+    background: var(--primary); color: white;
+    padding: 10px 16px; border-radius: 8px 8px 0 0;
+    font-weight: 700; font-size: 0.95rem; letter-spacing: 0.5px;
+  }
+  .match-row {
+    display: grid; grid-template-columns: 1fr 110px 1fr;
+    align-items: center; gap: 10px;
+    padding: 12px 16px; background: white;
+    border: 1px solid var(--border); border-top: none;
+    transition: background 0.15s;
+  }
+  .match-row:last-child { border-radius: 0 0 8px 8px; }
+  .match-row:hover { background: #f8fafc; }
+  .match-row.has-result { background: #f0faf4; }
+  .team-name { font-size: 0.9rem; font-weight: 500; }
+  .team-right { text-align: right; }
+  .score-input-wrap {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .score-input {
+    width: 40px; height: 36px; border: 2px solid var(--border);
+    border-radius: 8px; text-align: center; font-size: 1rem;
+    font-weight: 700; color: var(--primary);
+    transition: border-color 0.2s;
+  }
+  .score-input:focus { outline: none; border-color: var(--accent); }
+  .score-sep { font-weight: 700; color: var(--muted); font-size: 1.1rem; }
+  .match-date { font-size: 0.75rem; color: var(--muted); text-align: center; margin-top: 4px; }
+
+  /* Result display in overview */
+  .score-display {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-weight: 700; font-size: 1rem; color: var(--primary);
+  }
+  .score-box {
+    background: var(--primary); color: white;
+    padding: 4px 10px; border-radius: 6px; min-width: 32px; text-align: center;
+  }
+
+  /* Standings */
+  .standings-table {
+    width: 100%; border-collapse: collapse; font-size: 0.9rem;
+  }
+  .standings-table th {
+    background: var(--primary); color: white;
+    padding: 10px 14px; text-align: left; font-weight: 600;
+    font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .standings-table th:last-child, .standings-table td:last-child { text-align: right; }
+  .standings-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .standings-table tr:last-child td { border-bottom: none; }
+  .standings-table tr:hover td { background: var(--gray); }
+  .rank { font-weight: 700; color: var(--muted); }
+  .rank-1 { color: #f59e0b; font-size: 1.1rem; }
+  .rank-2 { color: #9ca3af; font-size: 1.05rem; }
+  .rank-3 { color: #a16207; }
+  .pts { font-weight: 800; font-size: 1.1rem; color: var(--primary); }
+  .pts-exact { font-size: 0.8rem; color: var(--green); }
+
+  /* Point chips */
+  .chip {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .chip-exact { background: #d1fae5; color: #065f46; }
+  .chip-tend { background: #fef3c7; color: #92400e; }
+  .chip-miss { background: #fee2e2; color: #991b1b; }
+  .chip-open { background: #e5e7eb; color: #6b7280; }
+
+  /* All tips view */
+  .tips-match-card { margin-bottom: 20px; }
+  .tips-match-header {
+    background: #1e3a5a; color: white;
+    padding: 12px 16px; border-radius: 8px 8px 0 0;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .tips-match-header .teams { font-weight: 700; }
+  .tips-match-header .actual-result { font-size: 0.85rem; }
+  .tips-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 8px 8px; overflow: hidden;
+  }
+  .tip-cell {
+    padding: 12px 14px; border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border); background: white;
+  }
+  .tip-cell:last-child { border-right: none; }
+  .tip-name { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+  .tip-score { font-size: 1.1rem; font-weight: 800; color: var(--primary); margin: 4px 0; }
+
+  /* Buttons */
+  .btn {
+    padding: 10px 22px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 0.9rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: #0f2540; }
+  .btn-accent { background: var(--accent); color: white; }
+  .btn-accent:hover { background: #c8880e; }
+  .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary); color: white; }
+
+  /* Modal */
+  .modal-bg {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+  }
+  .modal-bg.hidden { display: none; }
+  .modal {
+    background: white; border-radius: 16px;
+    padding: 32px; max-width: 440px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal h2 { font-size: 1.3rem; margin-bottom: 8px; color: var(--primary); }
+  .modal p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .form-control {
+    width: 100%; padding: 10px 14px; border: 2px solid var(--border);
+    border-radius: 8px; font-size: 0.95rem;
+    transition: border-color 0.2s;
+  }
+  .form-control:focus { outline: none; border-color: var(--primary); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+
+  /* Admin */
+  .admin-match-row {
+    display: grid; grid-template-columns: 1fr 130px 1fr;
+    align-items: center; gap: 10px;
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+  }
+  .admin-match-row:last-child { border-bottom: none; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .match-row { grid-template-columns: 1fr 96px 1fr; }
+    .tips-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-inner { flex-wrap: wrap; gap: 10px; }
+  }
+
+  /* Save bar */
+  .save-bar {
+    position: sticky; bottom: 0; left: 0; right: 0;
+    background: var(--primary); color: white;
+    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
+  }
+  .save-bar.hidden { display: none; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: #1c2b3a; color: white; padding: 12px 24px;
+    border-radius: 8px; font-weight: 500; font-size: 0.9rem;
+    z-index: 999; opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  .empty-state {
+    text-align: center; padding: 48px 20px; color: var(--muted);
+  }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+  .progress-bar-wrap { background: var(--border); border-radius: 4px; height: 6px; margin-top: 6px; }
+  .progress-bar { background: var(--accent); height: 6px; border-radius: 4px; transition: width 0.4s; }
+
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-btn {
+    padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+    background: white; cursor: pointer; font-size: 0.82rem; font-weight: 600;
+    transition: all 0.2s; color: var(--muted);
+  }
+  .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-icon">⚽</span>
+      <div class="logo-text">
+        <h1>WM 2026 Tippspiel</h1>
+        <span>Kanada · Mexiko · USA</span>
+      </div>
+    </div>
+    <div class="user-badge" onclick="showLogin()">
+      <span id="userIcon">👤</span>
+      <span id="userName">Anmelden</span>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-inner">
+      <button class="nav-btn active" onclick="showPage('start')">🏠 Start</button>
+      <button class="nav-btn" onclick="showPage('tipps')">✏️ Meine Tipps</button>
+      <button class="nav-btn" onclick="showPage('tabelle')">🏆 Tabelle</button>
+      <button class="nav-btn" onclick="showPage('alle')">📋 Alle Tipps</button>
+      <button class="nav-btn" onclick="showPage('admin')">🔧 Ergebnisse</button>
+    </div>
+  </nav>
+</header>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-bg hidden" id="loginModal">
+  <div class="modal">
+    <h2>👋 Wer bist du?</h2>
+    <p>Wähle deinen Namen oder tippe als Gast.</p>
+    <div id="loginGrid" class="login-grid"></div>
+    <div id="nameEntry" style="display:none; margin-top:16px;">
+      <div class="form-group">
+        <label>Dein Name</label>
+        <input class="form-control" id="nameInput" placeholder="Name eingeben..." maxlength="20">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="cancelNameEntry()">Zurück</button>
+        <button class="btn btn-primary" onclick="confirmName()">Bestätigen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGES -->
+
+<!-- START -->
+<div class="page active" id="page-start">
+  <div class="card">
+    <div style="text-align:center; padding: 16px 0 8px;">
+      <div style="font-size:3.5rem;">⚽🏆</div>
+      <h2 style="font-size:1.5rem; margin: 12px 0 8px; color:var(--primary);">Willkommen zum WM 2026 Tippspiel!</h2>
+      <p style="color:var(--muted); max-width:500px; margin:0 auto 20px;">
+        Tippe alle 104 Gruppenspiele und gewinne Punkte für richtige Prognosen. Exaktes Ergebnis = 3 Punkte, richtige Tendenz = 1 Punkt.
+      </p>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="showLogin()">Jetzt anmelden</button>
+        <button class="btn btn-outline" onclick="showPage('tabelle')">Tabelle ansehen</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;">
+    <div class="card" style="padding:20px;">
+      <div class="card-title">📅 Spielplan</div>
+      <p style="font-size:0.88rem; color:var(--muted);">Gruppenphase: 11.–27. Juni 2026<br>Achtelfinale: 29. Juni – 6. Juli<br>Viertelfinale: 9.–10. Juli<br>Halbfinale: 14.–15. Juli<br>Finale: 19. Juli 2026</p>
+    </div>
+    <div class="card" style="padding:20px;">
+      <div class="card-title">🎯 Punktesystem</div>
+      <div style="font-size:0.88rem;">
+        <div style="display:flex;justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
+          <span>Exaktes Ergebnis</span><strong style="color:var(--primary);">3 Punkte</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">
+          <span>Richtige Tendenz</span><strong style="color:var(--accent);">1 Punkt</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between; padding:4px 0;">
+          <span>Falsch</span><strong style="color:var(--muted);">0 Punkte</strong>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:20px;" id="statusCard">
+      <div class="card-title">📊 Dein Status</div>
+      <div id="myStatus" style="color:var(--muted); font-size:0.88rem;">Melde dich an, um deinen Status zu sehen.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">👥 Teilnehmer</div>
+    <div id="participantOverview"></div>
+  </div>
+</div>
+
+<!-- TIPPS -->
+<div class="page" id="page-tipps">
+  <div class="card" style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <div>
+      <strong id="tippsTitle">Meine Tipps</strong>
+      <div style="font-size:0.8rem; color:var(--muted); margin-top:2px;" id="tippsProgress"></div>
+    </div>
+    <div class="filter-row" style="margin:0;">
+      <button class="filter-btn active" onclick="setTipFilter('all', this)">Alle</button>
+      <button class="filter-btn" onclick="setTipFilter('open', this)">Offen</button>
+      <button class="filter-btn" onclick="setTipFilter('done', this)">Getippt</button>
+    </div>
+  </div>
+  <div id="tippsContent"></div>
+  <div class="save-bar hidden" id="saveBar">
+    <span>⚡ Nicht gespeicherte Tipps</span>
+    <button class="btn btn-accent" onclick="saveTips()">Alles speichern</button>
+  </div>
+</div>
+
+<!-- TABELLE -->
+<div class="page" id="page-tabelle">
+  <div class="card">
+    <div class="card-title">🏆 Gesamtranking</div>
+    <div id="tabelleContent"></div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;" id="groupTables"></div>
+</div>
+
+<!-- ALLE TIPPS -->
+<div class="page" id="page-alle">
+  <div class="card" style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <strong>Alle Tipps im Vergleich</strong>
+    <div class="filter-row" style="margin:0;" id="alleFilter">
+      <button class="filter-btn active" onclick="setAlleFilter('all', this)">Alle Gruppen</button>
+    </div>
+  </div>
+  <div id="alleContent"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="card">
+    <div class="card-title">🔧 Ergebnisse eintragen</div>
+    <p style="font-size:0.85rem; color:var(--muted); margin-bottom:16px;">
+      Hier können die tatsächlichen Spielergebnisse eingetragen werden. Diese werden für die Punktewertung verwendet.
+    </p>
+    <div class="form-group">
+      <label>Admin-Passwort</label>
+      <div style="display:flex; gap:8px;">
+        <input class="form-control" type="password" id="adminPw" placeholder="Passwort..." style="max-width:220px;">
+        <button class="btn btn-primary" onclick="unlockAdmin()">Freischalten</button>
+      </div>
+    </div>
+    <div id="adminContent" style="display:none; margin-top:16px;"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const GROUPS = {
+  A: { teams: ['Mexiko', 'Südkorea', 'Südafrika', 'Tschechien'] },
+  B: { teams: ['Kanada', 'Schweiz', 'Katar', 'Bosnien-Herzegowina'] },
+  C: { teams: ['Brasilien', 'Marokko', 'Schottland', 'Haiti'] },
+  D: { teams: ['USA', 'Paraguay', 'Australien', 'Türkei'] },
+  E: { teams: ['Deutschland', 'Elfenbeinküste', 'Ecuador', 'Curaçao'] },
+  F: { teams: ['Niederlande', 'Japan', 'Tunesien', 'Schweden'] },
+  G: { teams: ['Belgien', 'Ägypten', 'Iran', 'Neuseeland'] },
+  H: { teams: ['Spanien', 'Kap Verde', 'Saudi-Arabien', 'Uruguay'] },
+  I: { teams: ['Frankreich', 'Senegal', 'Irak', 'Norwegen'] },
+  J: { teams: ['Argentinien', 'Österreich', 'Algerien', 'Jordanien'] },
+  K: { teams: ['Portugal', 'Kolumbien', 'Usbekistan', 'DR Kongo'] },
+  L: { teams: ['England', 'Kroatien', 'Ghana', 'Panama'] },
+};
+
+const AVATARS = ['🦁','🐯','🦊','🐺','🦅','🐉','🦋','🌟','🔥','⚡','🌊','🎯'];
+
+// Generate all group stage matches
+function buildMatches() {
+  const matches = [];
+  let id = 1;
+  Object.entries(GROUPS).forEach(([group, g]) => {
+    const t = g.teams;
+    const combos = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+    combos.forEach(([a, b]) => {
+      matches.push({ id: id++, group, team1: t[a], team2: t[b] });
+    });
+  });
+  return matches;
+}
+
+const MATCHES = buildMatches(); // 72 group stage matches
+
+const ADMIN_PW = 'wm2026';
+const MAX_PARTICIPANTS = 6;
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+
+let state = {
+  participants: [], // [{id, name, avatar}]
+  results: {},      // matchId -> {g1, g2}
+  tips: {},         // userId -> matchId -> {g1, g2}
+  currentUser: null,
+  adminUnlocked: false,
+  tipFilter: 'all',
+  alleFilter: 'all',
+  unsaved: false,
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('wm2026_state');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      state = { ...state, ...saved, adminUnlocked: false, unsaved: false };
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  const toSave = {
+    participants: state.participants,
+    results: state.results,
+    tips: state.tips,
+    currentUser: state.currentUser,
+  };
+  localStorage.setItem('wm2026_state', JSON.stringify(toSave));
+}
+
+// ─── SCORING ─────────────────────────────────────────────────────────────────
+
+function getTendency(g1, g2) {
+  if (g1 > g2) return 'W';
+  if (g1 < g2) return 'L';
+  return 'D';
+}
+
+function calcPoints(tip, result) {
+  if (!tip || !result) return null;
+  if (tip.g1 === result.g1 && tip.g2 === result.g2) return 3;
+  if (getTendency(tip.g1, tip.g2) === getTendency(result.g1, result.g2)) return 1;
+  return 0;
+}
+
+function getUserPoints(userId) {
+  const userTips = state.tips[userId] || {};
+  let total = 0, exact = 0, tend = 0, scored = 0;
+  MATCHES.forEach(m => {
+    const res = state.results[m.id];
+    if (!res) return;
+    const tip = userTips[m.id];
+    const pts = calcPoints(tip, res);
+    if (pts !== null) {
+      scored++;
+      total += pts;
+      if (pts === 3) exact++;
+      if (pts === 1) tend++;
+    }
+  });
+  const tipped = Object.values(userTips).filter(t => t.g1 !== '' && t.g2 !== '').length;
+  return { total, exact, tend, scored, tipped };
+}
+
+function getSortedStandings() {
+  return [...state.participants]
+    .map(p => ({ ...p, ...getUserPoints(p.id) }))
+    .sort((a, b) => b.total - a.total || b.exact - a.exact);
+}
+
+// ─── UI HELPERS ──────────────────────────────────────────────────────────────
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  const pages = ['start','tipps','tabelle','alle','admin'];
+  btns[pages.indexOf(name)]?.classList.add('active');
+  renderPage(name);
+}
+
+function renderPage(name) {
+  if (name === 'start') renderStart();
+  if (name === 'tipps') renderTipps();
+  if (name === 'tabelle') renderTabelle();
+  if (name === 'alle') renderAlle();
+  if (name === 'admin') renderAdmin();
+}
+
+function toast(msg, duration=2800) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+
+let pendingSlot = null;
+
+function showLogin() {
+  const modal = document.getElementById('loginModal');
+  modal.classList.remove('hidden');
+  renderLoginGrid();
+}
+
+function hideLogin() {
+  document.getElementById('loginModal').classList.add('hidden');
+  document.getElementById('nameEntry').style.display = 'none';
+}
+
+function renderLoginGrid() {
+  const grid = document.getElementById('loginGrid');
+  grid.innerHTML = '';
+
+  // Existing participants
+  state.participants.forEach(p => {
+    const pts = getUserPoints(p.id);
+    const btn = document.createElement('div');
+    btn.className = 'participant-btn';
+    btn.innerHTML = `
+      <div class="avatar">${p.avatar}</div>
+      <div class="pname">${p.name}</div>
+      <div class="pscore">${pts.total} Punkte</div>
+    `;
+    btn.onclick = () => { selectUser(p.id); hideLogin(); };
+    grid.appendChild(btn);
+  });
+
+  // Add slot if < 6
+  if (state.participants.length < MAX_PARTICIPANTS) {
+    const btn = document.createElement('div');
+    btn.className = 'participant-btn';
+    btn.innerHTML = `<div class="avatar">➕</div><div class="pname">Neu registrieren</div>`;
+    btn.onclick = () => showNameEntry('new');
+    grid.appendChild(btn);
+  }
+
+  // Viewer
+  const vbtn = document.createElement('div');
+  vbtn.className = 'participant-btn viewer';
+  vbtn.innerHTML = `<div class="avatar">👁️</div><div class="pname">Nur ansehen</div><div class="pscore">Kein Tippen</div>`;
+  vbtn.onclick = () => { selectUser(null); hideLogin(); };
+  grid.appendChild(vbtn);
+}
+
+function showNameEntry(slotId) {
+  pendingSlot = slotId;
+  document.getElementById('loginGrid').style.display = 'none';
+  document.getElementById('nameEntry').style.display = 'block';
+  document.getElementById('nameInput').value = '';
+  document.getElementById('nameInput').focus();
+}
+
+function cancelNameEntry() {
+  document.getElementById('loginGrid').style.display = 'grid';
+  document.getElementById('nameEntry').style.display = 'none';
+}
+
+function confirmName() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { toast('Bitte Namen eingeben!'); return; }
+  const avatar = AVATARS[state.participants.length % AVATARS.length];
+  const id = 'user_' + Date.now();
+  state.participants.push({ id, name, avatar });
+  state.tips[id] = {};
+  saveState();
+  selectUser(id);
+  hideLogin();
+}
+
+function selectUser(userId) {
+  state.currentUser = userId;
+  const user = state.participants.find(p => p.id === userId);
+  document.getElementById('userName').textContent = user ? user.name : 'Zuschauer';
+  document.getElementById('userIcon').textContent = user ? user.avatar : '👁️';
+  saveState();
+  renderPage(getCurrentPage());
+  updateMyStatus();
+}
+
+function getCurrentPage() {
+  const active = document.querySelector('.page.active');
+  return active?.id.replace('page-', '') || 'start';
+}
+
+// ─── START PAGE ───────────────────────────────────────────────────────────────
+
+function renderStart() {
+  updateMyStatus();
+  renderParticipantOverview();
+}
+
+function updateMyStatus() {
+  const el = document.getElementById('myStatus');
+  if (!state.currentUser) {
+    el.innerHTML = '<span style="color:var(--muted)">Melde dich an, um deinen Status zu sehen.</span>';
+    return;
+  }
+  const user = state.participants.find(p => p.id === state.currentUser);
+  if (!user) return;
+  const pts = getUserPoints(state.currentUser);
+  const totalMatches = MATCHES.length;
+  const pct = Math.round((pts.tipped / totalMatches) * 100);
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+      <span>${user.avatar} <strong>${user.name}</strong></span>
+      <span><strong style="color:var(--primary)">${pts.total} Pkt.</strong></span>
+    </div>
+    <div style="font-size:0.8rem; color:var(--muted);">
+      Getippt: ${pts.tipped} / ${totalMatches} Spiele
+    </div>
+    <div class="progress-bar-wrap" style="margin-top:8px">
+      <div class="progress-bar" style="width:${pct}%"></div>
+    </div>
+    <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">${pct}% vollständig</div>
+  `;
+}
+
+function renderParticipantOverview() {
+  const el = document.getElementById('participantOverview');
+  if (!state.participants.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:0.88rem;">Noch keine Teilnehmer registriert. <a href="#" onclick="showLogin();return false;">Jetzt anmelden</a></div>';
+    return;
+  }
+  const standings = getSortedStandings();
+  el.innerHTML = `<table class="standings-table">
+    <thead><tr><th>#</th><th>Name</th><th>Tipps</th><th>Exakt</th><th>Tendenz</th><th>Punkte</th></tr></thead>
+    <tbody>${standings.map((p, i) => `
+      <tr>
+        <td class="rank ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+        <td>${p.avatar} <strong>${p.name}</strong></td>
+        <td>${p.tipped}/${MATCHES.length}</td>
+        <td><span class="chip chip-exact">✓ ${p.exact}</span></td>
+        <td><span class="chip chip-tend">~ ${p.tend}</span></td>
+        <td class="pts">${p.total}</td>
+      </tr>
+    `).join('')}</tbody>
+  </table>`;
+}
+
+// ─── TIPPS PAGE ───────────────────────────────────────────────────────────────
+
+let tipChanges = {};
+
+function renderTipps() {
+  if (!state.currentUser) {
+    document.getElementById('tippsContent').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">✏️</div>
+        <p>Melde dich an, um Tipps einzugeben.</p>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="showLogin()">Anmelden</button>
+      </div>`;
+    document.getElementById('saveBar').classList.add('hidden');
+    return;
+  }
+
+  const user = state.participants.find(p => p.id === state.currentUser);
+  const userTips = state.tips[state.currentUser] || {};
+  const pts = getUserPoints(state.currentUser);
+  document.getElementById('tippsTitle').textContent = `${user.avatar} ${user.name} – Meine Tipps`;
+  document.getElementById('tippsProgress').textContent =
+    `${pts.tipped} von ${MATCHES.length} Spielen getippt · ${pts.total} Punkte`;
+
+  tipChanges = {};
+  const filter = state.tipFilter;
+  let html = '';
+
+  Object.entries(GROUPS).forEach(([group, g]) => {
+    const groupMatches = MATCHES.filter(m => m.group === group);
+    const visibleMatches = groupMatches.filter(m => {
+      if (filter === 'open') return !userTips[m.id];
+      if (filter === 'done') return !!userTips[m.id];
+      return true;
+    });
+    if (!visibleMatches.length) return;
+
+    html += `<div class="group-section">
+      <div class="group-header">Gruppe ${group}: ${g.teams.join(' · ')}</div>`;
+
+    visibleMatches.forEach(m => {
+      const tip = userTips[m.id] || {};
+      const res = state.results[m.id];
+      const pts2 = res && tip.g1 !== undefined ? calcPoints(tip, res) : null;
+      const chipHtml = pts2 === 3 ? '<span class="chip chip-exact">✓ 3</span>' :
+                       pts2 === 1 ? '<span class="chip chip-tend">~ 1</span>' :
+                       pts2 === 0 ? '<span class="chip chip-miss">✗ 0</span>' : '';
+      html += `<div class="match-row ${res ? 'has-result' : ''}">
+        <div class="team-name">${m.team1}</div>
+        <div>
+          <div class="score-input-wrap">
+            <input class="score-input" type="number" min="0" max="99"
+              value="${tip.g1 !== undefined ? tip.g1 : ''}"
+              data-mid="${m.id}" data-side="g1"
+              onchange="onTipChange(${m.id},'g1',this.value)"
+              ${res ? 'readonly' : ''}>
+            <span class="score-sep">:</span>
+            <input class="score-input" type="number" min="0" max="99"
+              value="${tip.g2 !== undefined ? tip.g2 : ''}"
+              data-mid="${m.id}" data-side="g2"
+              onchange="onTipChange(${m.id},'g2',this.value)"
+              ${res ? 'readonly' : ''}>
+          </div>
+          ${res ? `<div class="match-date">Ergebnis: ${res.g1}:${res.g2} ${chipHtml}</div>` : '<div class="match-date">—</div>'}
+        </div>
+        <div class="team-name team-right">${m.team2}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  document.getElementById('tippsContent').innerHTML = html || '<div class="empty-state"><div class="icon">✅</div><p>Keine Spiele in dieser Ansicht.</p></div>';
+}
+
+function onTipChange(matchId, side, value) {
+  if (!tipChanges[matchId]) tipChanges[matchId] = {};
+  tipChanges[matchId][side] = parseInt(value) || 0;
+  state.unsaved = true;
+  document.getElementById('saveBar').classList.remove('hidden');
+}
+
+function saveTips() {
+  if (!state.currentUser) return;
+  if (!state.tips[state.currentUser]) state.tips[state.currentUser] = {};
+  const userTips = state.tips[state.currentUser];
+
+  Object.entries(tipChanges).forEach(([mid, t]) => {
+    if (!userTips[mid]) userTips[mid] = {};
+    if (t.g1 !== undefined) userTips[mid].g1 = t.g1;
+    if (t.g2 !== undefined) userTips[mid].g2 = t.g2;
+  });
+
+  // Also sync from current inputs
+  document.querySelectorAll('.score-input[data-mid]').forEach(inp => {
+    if (inp.readOnly) return;
+    const mid = inp.dataset.mid;
+    const side = inp.dataset.side;
+    const val = parseInt(inp.value);
+    if (!isNaN(val)) {
+      if (!userTips[mid]) userTips[mid] = {};
+      userTips[mid][side] = val;
+    }
+  });
+
+  tipChanges = {};
+  state.unsaved = false;
+  saveState();
+  document.getElementById('saveBar').classList.add('hidden');
+  toast('✅ Tipps gespeichert!');
+  renderTipps();
+}
+
+function setTipFilter(val, el) {
+  state.tipFilter = val;
+  document.querySelectorAll('#page-tipps .filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderTipps();
+}
+
+// ─── TABELLE PAGE ─────────────────────────────────────────────────────────────
+
+function renderTabelle() {
+  const standings = getSortedStandings();
+  const el = document.getElementById('tabelleContent');
+
+  if (!standings.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:0.88rem;">Noch keine Teilnehmer.</div>';
+    return;
+  }
+
+  const maxPts = standings[0].total || 1;
+  el.innerHTML = `<table class="standings-table">
+    <thead><tr>
+      <th>#</th><th>Teilnehmer</th><th>Tipps</th>
+      <th title="Exakt richtig">3-Pkt</th>
+      <th title="Richtige Tendenz">1-Pkt</th>
+      <th title="Auswertete Spiele">Gespielt</th>
+      <th>Punkte</th>
+    </tr></thead>
+    <tbody>${standings.map((p, i) => `
+      <tr>
+        <td class="rank ${i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+        <td>${p.avatar} <strong>${p.name}</strong>${p.id === state.currentUser ? ' <span style="font-size:0.75rem;background:var(--accent);color:white;padding:1px 6px;border-radius:8px">Du</span>' : ''}</td>
+        <td style="font-size:0.85rem;">${p.tipped}/${MATCHES.length}</td>
+        <td><span class="chip chip-exact">✓ ${p.exact}</span></td>
+        <td><span class="chip chip-tend">~ ${p.tend}</span></td>
+        <td style="font-size:0.85rem;color:var(--muted);">${p.scored}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="pts">${p.total}</span>
+            <div class="progress-bar-wrap" style="width:80px;height:8px">
+              <div class="progress-bar" style="width:${Math.round((p.total/maxPts)*100)}%"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    `).join('')}</tbody>
+  </table>`;
+
+  // Group standings mini tables
+  const gt = document.getElementById('groupTables');
+  gt.innerHTML = '';
+  Object.entries(GROUPS).forEach(([group, g]) => {
+    const groupMatches = MATCHES.filter(m => m.group === group);
+    const teams = g.teams.map(name => ({
+      name, w:0, d:0, l:0, gf:0, ga:0, pts:0
+    }));
+
+    groupMatches.forEach(m => {
+      const res = state.results[m.id];
+      if (!res) return;
+      const ti = teams.findIndex(t => t.name === m.team1);
+      const tj = teams.findIndex(t => t.name === m.team2);
+      if (ti < 0 || tj < 0) return;
+      teams[ti].gf += res.g1; teams[ti].ga += res.g2;
+      teams[tj].gf += res.g2; teams[tj].ga += res.g1;
+      if (res.g1 > res.g2) { teams[ti].w++; teams[ti].pts+=3; teams[tj].l++; }
+      else if (res.g1 < res.g2) { teams[tj].w++; teams[tj].pts+=3; teams[ti].l++; }
+      else { teams[ti].d++; teams[ti].pts++; teams[tj].d++; teams[tj].pts++; }
+    });
+
+    teams.sort((a,b) => b.pts - a.pts || (b.gf-b.ga)-(a.gf-a.ga) || b.gf - a.gf);
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.style.padding = '0';
+    div.innerHTML = `
+      <div class="group-header" style="border-radius:8px 8px 0 0">Gruppe ${group}</div>
+      <table class="standings-table">
+        <thead><tr><th>Team</th><th>Sp</th><th>Pkt</th><th>Tore</th></tr></thead>
+        <tbody>${teams.map(t => `
+          <tr>
+            <td>${t.name}</td>
+            <td>${t.w+t.d+t.l}</td>
+            <td><strong>${t.pts}</strong></td>
+            <td style="font-size:0.82rem;color:var(--muted)">${t.gf}:${t.ga}</td>
+          </tr>
+        `).join('')}</tbody>
+      </table>`;
+    gt.appendChild(div);
+  });
+}
+
+// ─── ALLE TIPPS ───────────────────────────────────────────────────────────────
+
+function renderAlle() {
+  // Build group filter buttons
+  const filterEl = document.getElementById('alleFilter');
+  filterEl.innerHTML = `<button class="filter-btn ${state.alleFilter==='all'?'active':''}" onclick="setAlleFilter('all',this)">Alle</button>`;
+  Object.keys(GROUPS).forEach(g => {
+    filterEl.innerHTML += `<button class="filter-btn ${state.alleFilter===g?'active':''}" onclick="setAlleFilter('${g}',this)">Gruppe ${g}</button>`;
+  });
+
+  const el = document.getElementById('alleContent');
+  const filtered = state.alleFilter === 'all' ? MATCHES : MATCHES.filter(m => m.group === state.alleFilter);
+
+  el.innerHTML = filtered.map(m => {
+    const res = state.results[m.id];
+    const resHtml = res
+      ? `<div class="score-display"><span class="score-box">${res.g1}</span>:<span class="score-box">${res.g2}</span></div>`
+      : '<span style="color:var(--muted);font-size:0.8rem">Kein Ergebnis</span>';
+
+    const tipsHtml = state.participants.map(p => {
+      const tip = (state.tips[p.id] || {})[m.id];
+      const pts2 = res && tip ? calcPoints(tip, res) : null;
+      const chipCls = pts2 === 3 ? 'chip-exact' : pts2 === 1 ? 'chip-tend' : pts2 === 0 ? 'chip-miss' : 'chip-open';
+      return `<div class="tip-cell">
+        <div class="tip-name">${p.avatar} ${p.name}</div>
+        ${tip && tip.g1 !== undefined
+          ? `<div class="tip-score">${tip.g1} : ${tip.g2}</div>
+             <span class="chip ${chipCls}">${pts2===null?'—':pts2===3?'✓ 3 Pkt':pts2===1?'~ 1 Pkt':'✗ 0 Pkt'}</span>`
+          : `<div class="tip-score" style="color:var(--muted)">—</div>`
+        }
+      </div>`;
+    }).join('');
+
+    return `<div class="tips-match-card">
+      <div class="tips-match-header">
+        <span class="teams">Gruppe ${m.group}: ${m.team1} vs. ${m.team2}</span>
+        ${resHtml}
+      </div>
+      <div class="tips-grid">${tipsHtml || '<div style="padding:12px;color:var(--muted);font-size:0.85rem">Noch keine Teilnehmer</div>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function setAlleFilter(val, el) {
+  state.alleFilter = val;
+  document.querySelectorAll('#alleFilter .filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderAlle();
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────────
+
+function unlockAdmin() {
+  const pw = document.getElementById('adminPw').value;
+  if (pw === ADMIN_PW) {
+    state.adminUnlocked = true;
+    renderAdmin();
+  } else {
+    toast('❌ Falsches Passwort!');
+  }
+}
+
+function renderAdmin() {
+  const el = document.getElementById('adminContent');
+  if (!state.adminUnlocked) return;
+  el.style.display = 'block';
+
+  let html = '<div style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;">';
+  html += '<button class="btn btn-accent" onclick="saveResults()">💾 Ergebnisse speichern</button>';
+  html += '</div>';
+
+  Object.entries(GROUPS).forEach(([group, g]) => {
+    const groupMatches = MATCHES.filter(m => m.group === group);
+    html += `<div class="group-section">
+      <div class="group-header">Gruppe ${group}: ${g.teams.join(' · ')}</div>`;
+    groupMatches.forEach(m => {
+      const res = state.results[m.id] || {};
+      html += `<div class="admin-match-row">
+        <div class="team-name">${m.team1}</div>
+        <div class="score-input-wrap">
+          <input class="score-input" type="number" min="0" max="99"
+            id="res_${m.id}_g1" value="${res.g1 !== undefined ? res.g1 : ''}" placeholder="?">
+          <span class="score-sep">:</span>
+          <input class="score-input" type="number" min="0" max="99"
+            id="res_${m.id}_g2" value="${res.g2 !== undefined ? res.g2 : ''}" placeholder="?">
+        </div>
+        <div class="team-name" style="text-align:right">${m.team2}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  el.innerHTML = html;
+}
+
+function saveResults() {
+  MATCHES.forEach(m => {
+    const g1el = document.getElementById(`res_${m.id}_g1`);
+    const g2el = document.getElementById(`res_${m.id}_g2`);
+    if (!g1el || !g2el) return;
+    const g1 = parseInt(g1el.value);
+    const g2 = parseInt(g2el.value);
+    if (!isNaN(g1) && !isNaN(g2)) {
+      state.results[m.id] = { g1, g2 };
+    }
+  });
+  saveState();
+  toast('✅ Ergebnisse gespeichert!');
+  renderPage('tabelle');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+loadState();
+
+if (state.currentUser) {
+  const user = state.participants.find(p => p.id === state.currentUser);
+  if (user) {
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('userIcon').textContent = user.avatar;
+  }
+}
+
+renderStart();
+
+// Keyboard: Enter in name field
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmName();
+});
+
+// Close modal on backdrop click
+document.getElementById('loginModal').addEventListener('click', function(e) {
+  if (e.target === this) hideLogin();
+});
+</script>
+</body>
+</html>
