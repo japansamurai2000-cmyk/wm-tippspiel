@@ -690,7 +690,7 @@ function renderTipps() {
     });
     html += '</div>';
   });
-  document.getElementById('tippsContent').innerHTML = html || `<div class="empty"><div class="ei">✅</div><p>Keine Spiele in dieser Ansicht.</p></div>`;
+  document.getElementById('tippsContent').innerHTML = html || `<div class="empty"><div class="ei">✅</div><p>${t('no_matches')}</p></div>`;
 }
 
 function onTipInput(matchId, side, val) {
