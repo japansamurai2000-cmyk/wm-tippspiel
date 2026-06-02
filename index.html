@@ -683,7 +683,7 @@ function renderTipps() {
               ${res ? 'readonly' : ''}
               oninput="onTipInput(${m.id},'g2',this.value)">
           </div>
-          <div class="result-row">${res ? `Ergebnis: ${res.g1}:${res.g2} ${chipHtml}` : '—'}</div>
+          <div class="result-row">${res ? `${t('result_lbl')}: ${res.g1}:${res.g2} ${chipHtml}` : '—'}</div>
         </div>
         <div class="t-name t-right">${m.t2}</div>
       </div>`;
