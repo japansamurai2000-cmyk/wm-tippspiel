@@ -511,8 +511,8 @@ function scheduleSave() {
 function flushSave() {
   if (!currentUser || !db) return;
   db.ref(`wm2026/tips/${currentUser}`).set(tips[currentUser] || {}, err => {
-    if (err) { showStrip('error', '❌ Fehler beim Speichern'); setTimeout(hideStrip, 3000); }
-    else { showStrip('ok', '✅ Gespeichert!'); setTimeout(hideStrip, 2000); }
+    if (err) { showStrip('error', t('err_save')); setTimeout(hideStrip, 3000); }
+    else { showStrip('ok', t('saved')); setTimeout(hideStrip, 2000); }
   });
 }
 
