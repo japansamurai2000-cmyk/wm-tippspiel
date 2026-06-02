@@ -423,6 +423,23 @@ const GROUPS = {
   L: ['England','Kroatien','Ghana','Panama'],
 };
 
+// Ländernamen DE → EN
+const TEAM_EN = {
+  'Mexiko':'Mexico','Südkorea':'South Korea','Südafrika':'South Africa','Tschechien':'Czech Republic',
+  'Kanada':'Canada','Schweiz':'Switzerland','Katar':'Qatar','Bosnien-Herzegowina':'Bosnia & Herzegovina',
+  'Brasilien':'Brazil','Marokko':'Morocco','Schottland':'Scotland','Haiti':'Haiti',
+  'USA':'USA','Paraguay':'Paraguay','Australien':'Australia','Türkei':'Turkey',
+  'Deutschland':'Germany','Elfenbeinküste':'Ivory Coast','Ecuador':'Ecuador','Curaçao':'Curaçao',
+  'Niederlande':'Netherlands','Japan':'Japan','Tunesien':'Tunisia','Schweden':'Sweden',
+  'Belgien':'Belgium','Ägypten':'Egypt','Iran':'Iran','Neuseeland':'New Zealand',
+  'Spanien':'Spain','Kap Verde':'Cape Verde','Saudi-Arabien':'Saudi Arabia','Uruguay':'Uruguay',
+  'Frankreich':'France','Senegal':'Senegal','Irak':'Iraq','Norwegen':'Norway',
+  'Argentinien':'Argentina','Österreich':'Austria','Algerien':'Algeria','Jordanien':'Jordan',
+  'Portugal':'Portugal','Kolumbien':'Colombia','Usbekistan':'Uzbekistan','DR Kongo':'DR Congo',
+  'England':'England','Kroatien':'Croatia','Ghana':'Ghana','Panama':'Panama',
+};
+function tn(name) { return lang === 'en' ? (TEAM_EN[name] || name) : name; }
+
 // Datum-Lookup: beide Reihenfolgen werden geprüft (t1|t2 und t2|t1)
 const MATCH_DATES = {
   'Mexiko|Südafrika':'2026-06-11',
