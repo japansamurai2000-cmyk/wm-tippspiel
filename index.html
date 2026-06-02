@@ -612,16 +612,16 @@ function renderLogin() {
     const pct = Math.round((s.tipped / MATCHES.length) * 100);
     const rank = rankings.findIndex(r => r.name === currentUser) + 1;
     document.getElementById('myStatusCard').style.display = 'block';
-    document.getElementById('myStatusTitle').textContent = `${p.av} ${p.name} — Dein Status`;
+    document.getElementById('myStatusTitle').textContent = `${p.av} ${p.name} — ${t('status_title')}`;
     document.getElementById('myStatusBody').innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div>
           <span style="font-size:1.6rem;font-weight:800;color:var(--primary)">${s.pts}</span>
-          <span style="color:var(--muted);font-size:.85rem"> Punkte · Platz ${rank} von ${PARTICIPANTS.length}</span>
+          <span style="color:var(--muted);font-size:.85rem"> ${t('col_pts')} · ${t('rank_lbl')} ${rank} ${t('of_lbl')} ${PARTICIPANTS.length}</span>
         </div>
-        <button class="btn btn-primary" onclick="goTo('tipps')" style="font-size:.85rem;padding:8px 16px">✏️ Tipps eingeben</button>
+        <button class="btn btn-primary" onclick="goTo('tipps')" style="font-size:.85rem;padding:8px 16px">${t('enter_tips')}</button>
       </div>
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">Fortschritt: ${s.tipped} von ${MATCHES.length} Spielen getippt</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">${s.tipped} ${t('tipped_of')} ${MATCHES.length} ${t('games_tipped')}</div>
       <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
     `;
   } else {
