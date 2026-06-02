@@ -751,6 +751,34 @@ function renderTabelle() {
   });
 }
 
+// ─── SHARED HELPER: Tipp-Karte für ein Spiel ──────────────────────────────────
+function matchTipCard(m) {
+  const k = String(m.id);
+  const res = results[k];
+  const resHtml = res
+    ? `<div class="res-box"><span class="res-score">${res.g1}</span>:<span class="res-score">${res.g2}</span></div>`
+    : `<span style="font-size:.78rem;opacity:.6">Kein Ergebnis</span>`;
+  const cells = PARTICIPANTS.map(p => {
+    const tip = (tips[p.name] || {})[k];
+    const hasTip = tip && tip.g1 != null;
+    const pts = res && hasTip ? calcPts(tip, res) : null;
+    const chipCls = pts===3?'chip-3':pts===1?'chip-1':pts===0?'chip-0':'chip-open';
+    return `<div class="tip-cell">
+      <div class="tip-who">${p.av} ${p.name}</div>
+      ${hasTip
+        ? `<div class="tip-val">${tip.g1} : ${tip.g2}</div>
+           <span class="chip ${chipCls}">${pts===null?'—':pts===3?'✓ 3':pts===1?'~ 1':'✗ 0'}</span>`
+        : `<div class="tip-val" style="color:var(--muted)">—</div>`}
+    </div>`;
+  }).join('');
+  return `<div class="all-match">
+    <div class="all-head">
+      <span class="teams">Gr. ${m.group}: ${m.t1} vs. ${m.t2}</span>${resHtml}
+    </div>
+    <div class="tips-grid">${cells}</div>
+  </div>`;
+}
+
 // ─── ALLE TIPPS ───────────────────────────────────────────────────────────────
 function renderAlle() {
   const fr = document.getElementById('alleFilterRow');
@@ -759,38 +787,59 @@ function renderAlle() {
     fr.innerHTML += `<button class="fb ${alleFilterVal===g?'on':''}" onclick="alleFilter('${g}',this)">Gruppe ${g}</button>`;
   });
   const filtered = alleFilterVal === 'all' ? MATCHES : MATCHES.filter(m => m.group === alleFilterVal);
-  document.getElementById('alleContent').innerHTML = filtered.map(m => {
-    const k = String(m.id);
-    const res = results[k];
-    const resHtml = res
-      ? `<div class="res-box"><span class="res-score">${res.g1}</span>:<span class="res-score">${res.g2}</span></div>`
-      : `<span style="font-size:.78rem;opacity:.6">Kein Ergebnis</span>`;
-    const cells = PARTICIPANTS.map(p => {
-      const tip = (tips[p.name] || {})[k];
-      const hasTip = tip && tip.g1 != null;
-      const pts = res && hasTip ? calcPts(tip, res) : null;
-      const chipCls = pts===3?'chip-3':pts===1?'chip-1':pts===0?'chip-0':'chip-open';
-      return `<div class="tip-cell">
-        <div class="tip-who">${p.av} ${p.name}</div>
-        ${hasTip
-          ? `<div class="tip-val">${tip.g1} : ${tip.g2}</div>
-             <span class="chip ${chipCls}">${pts===null?'—':pts===3?'✓ 3':pts===1?'~ 1':'✗ 0'}</span>`
-          : `<div class="tip-val" style="color:var(--muted)">—</div>`}
-      </div>`;
-    }).join('');
-    return `<div class="all-match">
-      <div class="all-head">
-        <span class="teams">Gr. ${m.group}: ${m.t1} vs. ${m.t2}</span>${resHtml}
-      </div>
-      <div class="tips-grid">${cells}</div>
-    </div>`;
-  }).join('');
+  document.getElementById('alleContent').innerHTML = filtered.map(matchTipCard).join('');
 }
 function alleFilter(val, el) {
   alleFilterVal = val;
   document.querySelectorAll('#alleFilterRow .fb').forEach(b => b.classList.remove('on'));
   el.classList.add('on');
   renderAlle();
+}
+
+// ─── SPIELPLAN AUF STARTSEITE ─────────────────────────────────────────────────
+let scheduleFilterVal = 'upcoming';
+function setScheduleFilter(val, el) {
+  scheduleFilterVal = val;
+  document.querySelectorAll('#page-login .fb').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  renderStartSchedule();
+}
+function renderStartSchedule() {
+  const today = new Date().toISOString().split('T')[0];
+  const byDate = {};
+  MATCHES.forEach(m => {
+    const d = m.date || '9999-12-31';
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(m);
+  });
+  const dates = Object.keys(byDate).sort().filter(d => {
+    if (scheduleFilterVal === 'upcoming') return d >= today;
+    return true;
+  });
+  const fmt = d => {
+    const obj = new Date(d + 'T12:00:00');
+    const day = obj.toLocaleDateString('de-DE', { weekday: 'long' });
+    const date = obj.toLocaleDateString('de-DE', { day: 'numeric', month: 'long' });
+    return `${day}, ${date}`;
+  };
+  const el = document.getElementById('scheduleContent');
+  if (!dates.length) {
+    el.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:.88rem">Keine Spiele in diesem Zeitraum.</div>';
+    return;
+  }
+  el.innerHTML = dates.map(d => {
+    const isToday = d === today;
+    return `
+      <div style="margin-bottom:4px">
+        <div style="padding:8px 12px;margin-bottom:4px;font-weight:700;font-size:.85rem;
+          background:${isToday?'var(--accent)':'var(--primary)'};color:white;border-radius:8px;
+          display:flex;align-items:center;gap:6px">
+          ${isToday?'🔴 HEUTE — ':'📅 '}${fmt(d)}
+          <span style="margin-left:auto;font-weight:400;font-size:.75rem;opacity:.8">${byDate[d].length} Spiele</span>
+        </div>
+        ${byDate[d].map(matchTipCard).join('')}
+      </div>`;
+  }).join('');
 }
 
 // ─── ADMIN ────────────────────────────────────────────────────────────────────
