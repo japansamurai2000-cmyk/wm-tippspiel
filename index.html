@@ -837,7 +837,7 @@ function renderStartSchedule() {
   };
   const el = document.getElementById('scheduleContent');
   if (!dates.length) {
-    el.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:.88rem">Keine Spiele in diesem Zeitraum.</div>';
+    el.innerHTML = `<div style="padding:16px;color:var(--muted);font-size:.88rem">${t('no_matches')}</div>`;
     return;
   }
   el.innerHTML = dates.map(d => {
