@@ -654,7 +654,7 @@ function renderLogin() {
     const pct = Math.round((s.tipped / MATCHES.length) * 100);
     const rank = rankings.findIndex(r => r.name === currentUser) + 1;
     document.getElementById('myStatusCard').style.display = 'block';
-    document.getElementById('myStatusTitle').textContent = `${p.av} ${p.name} — ${t('status_title')}`;
+    document.getElementById('myStatusTitle').innerHTML = `${p.av} ${p.name} — ${t('status_title')}`;
     document.getElementById('myStatusBody').innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div>
