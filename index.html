@@ -716,7 +716,7 @@ function renderTabelle() {
   const medals = ['🥇','🥈','🥉'];
   document.getElementById('rankingContent').innerHTML = `
     <table class="standings">
-      <thead><tr><th>#</th><th>Name</th><th>Tipps</th><th>Exakt</th><th>Tendenz</th><th>Punkte</th></tr></thead>
+      <thead><tr><th>#</th><th>${t('col_name')}</th><th>${t('col_tips')}</th><th>${t('col_exact')}</th><th>${t('col_tend')}</th><th>${t('col_pts')}</th></tr></thead>
       <tbody>${rankings.map((r, i) => `
         <tr>
           <td class="medal">${medals[i] || (i+1)}</td>
