@@ -751,7 +751,7 @@ function renderTabelle() {
     rows.sort((a,b) => b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga));
     const div = document.createElement('div');
     div.className = 'card'; div.style.padding = '0';
-    div.innerHTML = `<div class="group-head" style="border-radius:10px 10px 0 0">Gruppe ${g}</div>
+    div.innerHTML = `<div class="group-head" style="border-radius:10px 10px 0 0">${t('group_lbl')} ${g}</div>
       <table class="standings">
         <thead><tr><th>Team</th><th>Sp</th><th>Pkt</th><th>Tore</th></tr></thead>
         <tbody>${rows.map(r => `<tr>
