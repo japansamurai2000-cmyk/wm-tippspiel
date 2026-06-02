@@ -847,7 +847,7 @@ function renderStartSchedule() {
         <div style="padding:8px 12px;margin-bottom:4px;font-weight:700;font-size:.85rem;
           background:${isToday?'var(--accent)':'var(--primary)'};color:white;border-radius:8px;
           display:flex;align-items:center;gap:6px">
-          ${isToday?'🔴 HEUTE — ':'📅 '}${fmt(d)}
+          ${isToday?`🔴 ${t('today_lbl')} — `:'📅 '}${fmt(d)}
           <span style="margin-left:auto;font-weight:400;font-size:.75rem;opacity:.8">${byDate[d].length} Spiele</span>
         </div>
         ${byDate[d].map(matchTipCard).join('')}
