@@ -461,7 +461,7 @@ let saveTimer = null;
 
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
 function boot() {
-  if (firebaseConfig.apiKey === 'DEIN_API_KEY') {
+  if (firebaseConfig.apiKey.startsWith('__')) {
     document.getElementById('setupScreen').style.display = 'block';
     return;
   }

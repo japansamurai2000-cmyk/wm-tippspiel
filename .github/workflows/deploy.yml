@@ -1,0 +1,49 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Firebase-Konfiguration einsetzen
+        env:
+          API_KEY:    ${{ secrets.FIREBASE_API_KEY }}
+          AUTH:       ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          DB_URL:     ${{ secrets.FIREBASE_DATABASE_URL }}
+          PROJECT:    ${{ secrets.FIREBASE_PROJECT_ID }}
+          STORAGE:    ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          SENDER:     ${{ secrets.FIREBASE_SENDER_ID }}
+          APP_ID:     ${{ secrets.FIREBASE_APP_ID }}
+        run: |
+          sed -i "s|__API_KEY__|$API_KEY|g"     index.html
+          sed -i "s|__AUTH__|$AUTH|g"           index.html
+          sed -i "s|__DB_URL__|$DB_URL|g"       index.html
+          sed -i "s|__PROJECT__|$PROJECT|g"     index.html
+          sed -i "s|__STORAGE__|$STORAGE|g"     index.html
+          sed -i "s|__SENDER__|$SENDER|g"       index.html
+          sed -i "s|__APP_ID__|$APP_ID|g"       index.html
+
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - id: deployment
+        uses: actions/deploy-pages@v4
