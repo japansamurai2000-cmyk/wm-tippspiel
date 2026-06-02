@@ -625,7 +625,7 @@ function renderPage(p) {
 function showLoginPage() { goTo('login'); }
 function updateHeader() {
   const p = PARTICIPANTS.find(x => x.name === currentUser);
-  document.getElementById('headerAvatar').textContent = p ? p.av : '👤';
+  document.getElementById('headerAvatar').innerHTML = p ? p.av : '👤';
   document.getElementById('headerName').textContent = p ? p.name : t('nav_login');
 }
 
