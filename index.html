@@ -401,13 +401,39 @@ const GROUPS = {
   L: ['England','Kroatien','Ghana','Panama'],
 };
 
+// Datum-Lookup: beide Reihenfolgen werden geprüft (t1|t2 und t2|t1)
+const MATCH_DATES = {
+  'Mexiko|Südafrika':'2026-06-11',
+  'Südkorea|Tschechien':'2026-06-12','Kanada|Bosnien-Herzegowina':'2026-06-12',
+  'USA|Paraguay':'2026-06-13','Katar|Schweiz':'2026-06-13','Brasilien|Marokko':'2026-06-13',
+  'Haiti|Schottland':'2026-06-14','Australien|Türkei':'2026-06-14','Deutschland|Curaçao':'2026-06-14','Niederlande|Japan':'2026-06-14',
+  'Elfenbeinküste|Ecuador':'2026-06-15','Schweden|Tunesien':'2026-06-15','Spanien|Kap Verde':'2026-06-15','Belgien|Ägypten':'2026-06-15','Saudi-Arabien|Uruguay':'2026-06-15',
+  'Iran|Neuseeland':'2026-06-16','Frankreich|Senegal':'2026-06-16','Irak|Norwegen':'2026-06-16',
+  'Argentinien|Algerien':'2026-06-17','Österreich|Jordanien':'2026-06-17','Portugal|DR Kongo':'2026-06-17','England|Kroatien':'2026-06-17',
+  'Ghana|Panama':'2026-06-18','Usbekistan|Kolumbien':'2026-06-18','Tschechien|Südafrika':'2026-06-18','Schweiz|Bosnien-Herzegowina':'2026-06-18','Kanada|Katar':'2026-06-18',
+  'Mexiko|Südkorea':'2026-06-19','USA|Australien':'2026-06-19','Schottland|Marokko':'2026-06-19',
+  'Brasilien|Haiti':'2026-06-20','Türkei|Paraguay':'2026-06-20','Niederlande|Schweden':'2026-06-20','Deutschland|Elfenbeinküste':'2026-06-20',
+  'Ecuador|Curaçao':'2026-06-21','Tunesien|Japan':'2026-06-21','Spanien|Saudi-Arabien':'2026-06-21','Belgien|Iran':'2026-06-21','Uruguay|Kap Verde':'2026-06-21',
+  'Neuseeland|Ägypten':'2026-06-22','Argentinien|Österreich':'2026-06-22','Frankreich|Irak':'2026-06-22',
+  'Norwegen|Senegal':'2026-06-23','Jordanien|Algerien':'2026-06-23','Portugal|Usbekistan':'2026-06-23','England|Ghana':'2026-06-23',
+  'Panama|Kroatien':'2026-06-24','Kolumbien|DR Kongo':'2026-06-24','Schweiz|Kanada':'2026-06-24','Bosnien-Herzegowina|Katar':'2026-06-24','Marokko|Haiti':'2026-06-24','Schottland|Brasilien':'2026-06-24',
+  'Südafrika|Südkorea':'2026-06-25','Tschechien|Mexiko':'2026-06-25','Curaçao|Elfenbeinküste':'2026-06-25','Ecuador|Deutschland':'2026-06-25',
+  'Tunesien|Niederlande':'2026-06-26','Japan|Schweden':'2026-06-26','Türkei|USA':'2026-06-26','Paraguay|Australien':'2026-06-26','Norwegen|Frankreich':'2026-06-26','Senegal|Irak':'2026-06-26',
+  'Kap Verde|Saudi-Arabien':'2026-06-27','Uruguay|Spanien':'2026-06-27','Neuseeland|Belgien':'2026-06-27','Ägypten|Iran':'2026-06-27','Panama|England':'2026-06-27','Kroatien|Ghana':'2026-06-27',
+  'Kolumbien|Portugal':'2026-06-28','DR Kongo|Usbekistan':'2026-06-28','Algerien|Österreich':'2026-06-28','Jordanien|Argentinien':'2026-06-28',
+};
+
 // Build 72 group-stage matches
 const MATCHES = (() => {
   const list = [];
   let id = 1;
   const pairs = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
   Object.entries(GROUPS).forEach(([g, teams]) => {
-    pairs.forEach(([a, b]) => list.push({ id: id++, group: g, t1: teams[a], t2: teams[b] }));
+    pairs.forEach(([a, b]) => {
+      const t1 = teams[a], t2 = teams[b];
+      const date = MATCH_DATES[`${t1}|${t2}`] || MATCH_DATES[`${t2}|${t1}`] || null;
+      list.push({ id: id++, group: g, t1, t2, date });
+    });
   });
   return list;
 })();
