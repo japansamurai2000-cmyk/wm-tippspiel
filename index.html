@@ -636,7 +636,7 @@ function selectUser(name) {
   else localStorage.removeItem('wm2026_user');
   updateHeader();
   renderLogin();
-  if (name) { toast(`👋 Hallo ${name}!`); goTo('tipps'); }
+  if (name) { toast(`👋 ${t('hello')} ${name}!`); goTo('tipps'); }
 }
 
 // ─── TIPPS PAGE ───────────────────────────────────────────────────────────────
