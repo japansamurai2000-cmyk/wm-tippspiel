@@ -493,6 +493,7 @@ function boot() {
     results = data.results || {};
     tips = data.tips || {};
     renderCurrentPage();
+    renderStartSchedule(); // schedule is always in DOM, sync regardless of active page
     updateHeader();
   });
 
