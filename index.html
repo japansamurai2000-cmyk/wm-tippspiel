@@ -642,7 +642,7 @@ function selectUser(name) {
 // ─── TIPPS PAGE ───────────────────────────────────────────────────────────────
 function renderTipps() {
   if (!currentUser) {
-    document.getElementById('tippsContent').innerHTML = `<div class="empty"><div class="ei">✏️</div><p>Melde dich an, um Tipps einzugeben.</p><button class="btn btn-primary" style="margin-top:14px" onclick="goTo('login')">Anmelden</button></div>`;
+    document.getElementById('tippsContent').innerHTML = `<div class="empty"><div class="ei">✏️</div><p>${t('login_to_tip')}</p><button class="btn btn-primary" style="margin-top:14px" onclick="goTo('login')">${t('login_btn')}</button></div>`;
     return;
   }
   const p = PARTICIPANTS.find(x => x.name === currentUser);
