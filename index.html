@@ -773,7 +773,7 @@ function renderTabelle() {
       <table class="standings">
         <thead><tr><th>Team</th><th>Sp</th><th>Pkt</th><th>Tore</th></tr></thead>
         <tbody>${rows.map(r => `<tr>
-          <td>${r.name}</td><td>${r.w+r.d+r.l}</td>
+          <td>${tn(r.name)}</td><td>${r.w+r.d+r.l}</td>
           <td><strong>${r.pts}</strong></td>
           <td style="font-size:.8rem;color:var(--muted)">${r.gf}:${r.ga}</td>
         </tr>`).join('')}</tbody>
