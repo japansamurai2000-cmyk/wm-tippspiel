@@ -689,7 +689,7 @@ function renderTipps() {
   }
   const p = PARTICIPANTS.find(x => x.name === currentUser);
   const s = userStats(currentUser);
-  document.getElementById('tippsHeading').textContent = `${p.av} ${p.name} — Meine Tipps`;
+  document.getElementById('tippsHeading').innerHTML = `${p.av} ${p.name} — Meine Tipps`;
   document.getElementById('tippsSubline').textContent = `${s.tipped} ${t('tipped_of')} ${MATCHES.length} ${t('games_tipped')} · ${s.pts} ${t('col_pts')}`;
 
   const ut = tips[currentUser] || {};
