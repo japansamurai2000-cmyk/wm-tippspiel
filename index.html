@@ -262,19 +262,22 @@ nav { background: rgba(0,0,0,.18); }
         <small>Kanada · Mexiko · USA</small>
       </div>
     </div>
-    <div class="user-pill" onclick="showLoginPage()">
-      <span id="connDot" class="conn-dot off" title="Verbindungsstatus"></span>
-      <span id="headerAvatar">👤</span>
-      <span id="headerName">Anmelden</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="langBtn" class="lang-btn" onclick="toggleLang()">EN</button>
+      <div class="user-pill" onclick="showLoginPage()">
+        <span id="connDot" class="conn-dot off"></span>
+        <span id="headerAvatar">👤</span>
+        <span id="headerName" data-i18n="nav_login">Anmelden</span>
+      </div>
     </div>
   </div>
   <nav>
     <div class="nav-inner">
-      <button class="nav-btn active" onclick="goTo('login')">👋 Start</button>
-      <button class="nav-btn" onclick="goTo('tipps')">✏️ Meine Tipps</button>
-      <button class="nav-btn" onclick="goTo('tabelle')">🏆 Tabelle</button>
-      <button class="nav-btn" onclick="goTo('alle')">📋 Alle Tipps</button>
-      <button class="nav-btn" onclick="goTo('admin')">🔧 Ergebnisse</button>
+      <button class="nav-btn active" id="nav-login"   onclick="goTo('login')">👋 Start</button>
+      <button class="nav-btn"        id="nav-tipps"   onclick="goTo('tipps')">✏️ Meine Tipps</button>
+      <button class="nav-btn"        id="nav-tabelle" onclick="goTo('tabelle')">🏆 Tabelle</button>
+      <button class="nav-btn"        id="nav-alle"    onclick="goTo('alle')">📋 Alle Tipps</button>
+      <button class="nav-btn"        id="nav-admin"   onclick="goTo('admin')">🔧 Ergebnisse</button>
     </div>
   </nav>
 </header>
