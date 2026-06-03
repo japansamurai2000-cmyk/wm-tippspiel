@@ -254,6 +254,29 @@ nav { background: rgba(0,0,0,.28); }
   .tips-grid { grid-template-columns: repeat(2, 1fr); }
   .standings th, .standings td { padding: 9px 8px; }
 }
+
+/* ─── KO BRACKET ─── */
+.bracket-wrap { overflow-x: auto; padding: 0 0 12px; -webkit-overflow-scrolling: touch; }
+.bracket { display: flex; gap: 14px; padding: 4px 2px; }
+.b-round { display: flex; flex-direction: column; min-width: 120px; flex: 1; }
+.b-round-title { text-align: center; font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: white; background: var(--navy3); border-radius: 6px; padding: 5px 4px; margin-bottom: 6px; white-space: nowrap; }
+.b-slots { display: flex; flex-direction: column; justify-content: space-around; flex: 1; }
+.b-match { background: white; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 1px 6px rgba(10,22,40,.08); margin: 2px 0; }
+.b-match.settled { border-color: var(--pitch2); }
+.b-team { padding: 5px 7px; display: flex; justify-content: space-between; align-items: center; font-size: .75rem; min-height: 27px; }
+.b-team + .b-team { border-top: 1px solid var(--border); }
+.b-team.winner { background: #f0fdf4; font-weight: 800; color: var(--pitch); }
+.b-team.tbd { color: var(--muted); font-style: italic; font-size: .68rem; }
+.b-team-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 78px; }
+.b-score { font-weight: 900; font-size: .82rem; flex-shrink: 0; margin-left: 3px; }
+.b-team.winner .b-score { color: var(--pitch); }
+.b-date { font-size: .58rem; text-align: center; color: var(--muted); padding: 2px 4px; background: var(--bg); border-top: 1px solid var(--border); }
+
+/* ─── LOCKED MATCH & COUNTDOWN ─── */
+.match-row.locked { background: #f8fafc !important; }
+.locked-lbl { font-size: .62rem; background: #e2e8f0; color: #64748b; padding: 1px 5px; border-radius: 4px; font-weight: 700; }
+.cdown { font-size: .62rem; background: var(--red); color: white; padding: 1px 6px; border-radius: 4px; font-weight: 700; display: inline-block; animation: cdpulse 1.5s ease-in-out infinite; }
+@keyframes cdpulse { 0%,100%{opacity:1} 50%{opacity:.55} }
 </style>
 </head>
 <body>
