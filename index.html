@@ -1688,10 +1688,10 @@ function renderAdminMatches() {
 
   // KO-Runde
   html += `<div style="margin:20px 0 8px;padding:12px 0 0;border-top:2px solid var(--border)">
-    <strong style="color:var(--navy);font-size:.95rem">🏆 Endrunde — Teamname &amp; Ergebnis</strong>
-    <p style="font-size:.78rem;color:var(--muted);margin-top:4px">Teamnamen eintragen sobald bekannt, Ergebnis nach Abpfiff.</p>
+    <strong style="color:var(--navy);font-size:.95rem">${t('ko_admin_title')}</strong>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:4px">${t('ko_admin_hint')}</p>
   </div>
-  <button class="btn btn-accent" onclick="saveKoResults()" style="margin-bottom:16px">💾 Endrunde speichern</button>`;
+  <button class="btn btn-accent" onclick="saveKoResults()" style="margin-bottom:16px">${t('ko_save_btn')}</button>`;
 
   const koRoundsOrder = ['R32','R16','QF','SF','3P','F'];
   koRoundsOrder.forEach(rid => {
