@@ -1133,7 +1133,7 @@ const THIRD_PLACE_TABLE={
 "DFGHIJKL":{A:"H",B:"G",D:"I",E:"D",G:"J",I:"F",K:"L",L:"K"},
 "EFGHIJKL":{A:"E",B:"J",D:"I",E:"F",G:"H",I:"G",K:"L",L:"K"},
 };
-const TOTAL_MATCHES = MATCHES.length + KO_MATCHES.length;
+const TOTAL_MATCHES = TOTAL_MATCHES;
 
 // ─── BRACKET-SLOTS (R32 → Final) ─────────────────────────────────────────────
 // Jeder Slot hat t1/t2 als Quelle: '1X'=Gruppensieger X, '2X'=Zweiter X,
@@ -1408,7 +1408,7 @@ function renderLogin() {
     return `<div class="name-btn${isMe?' active':''}" onclick="selectUser('${p.name}')">
       <div class="av">${p.av}</div>
       <div class="nm">${p.name}</div>
-      <div class="pts">${s.pts} ${t('col_pts_short')} · ${s.tipped}/${MATCHES.length + KO_MATCHES.length}</div>
+      <div class="pts">${s.pts} ${t('col_pts_short')} · ${s.tipped}/${TOTAL_MATCHES}</div>
     </div>`;
   }).join('') +
   `<div class="name-btn viewer" onclick="selectUser(null)">
@@ -1419,7 +1419,7 @@ function renderLogin() {
   if (currentUser) {
     const p = PARTICIPANTS.find(x => x.name === currentUser);
     const s = statsByName[currentUser];
-    const pct = Math.round((s.tipped / (MATCHES.length + KO_MATCHES.length)) * 100);
+    const pct = Math.round((s.tipped / (TOTAL_MATCHES)) * 100);
     const rank = rankings.findIndex(r => r.name === currentUser) + 1;
     document.getElementById('myStatusCard').style.display = 'block';
     document.getElementById('myStatusTitle').innerHTML = `${p.av} ${p.name} — ${t('status_title')}`;
@@ -1431,7 +1431,7 @@ function renderLogin() {
         </div>
         <button class="btn btn-primary" onclick="goTo('tipps')" style="font-size:.85rem;padding:8px 16px">${t('enter_tips')}</button>
       </div>
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">${s.tipped} ${t('tipped_of')} ${MATCHES.length + KO_MATCHES.length} ${t('games_tipped')}</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">${s.tipped} ${t('tipped_of')} ${TOTAL_MATCHES} ${t('games_tipped')}</div>
       <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
     `;
   } else {
@@ -1478,7 +1478,7 @@ function renderTipps() {
   document.getElementById('tippsHeading').innerHTML = `${p.av} ${p.name} — ${t('tipps_lbl')}`;
 
   document.getElementById('miniRanking').innerHTML = '';
-  document.getElementById('tippsSubline').textContent = `${s.tipped} ${t('tipped_of')} ${MATCHES.length + KO_MATCHES.length} ${t('games_tipped')} · ${s.pts} ${t('col_pts')}`;
+  document.getElementById('tippsSubline').textContent = `${s.tipped} ${t('tipped_of')} ${TOTAL_MATCHES} ${t('games_tipped')} · ${s.pts} ${t('col_pts')}`;
 
   const ut = tips[currentUser] || {};
   const today = new Date().toISOString().split('T')[0];
@@ -1588,7 +1588,7 @@ function renderTabelle() {
         <tr>
           <td class="medal">${medals[i] || (i+1)}</td>
           <td>${r.av} <strong>${r.name}</strong>${r.name===currentUser?' <span style="font-size:.7rem;background:var(--accent);color:white;padding:1px 6px;border-radius:8px">Du</span>':''}</td>
-          <td style="font-size:.82rem;color:var(--muted)">${r.tipped}/${MATCHES.length + KO_MATCHES.length}</td>
+          <td style="font-size:.82rem;color:var(--muted)">${r.tipped}/${TOTAL_MATCHES}</td>
           <td><span class="chip chip-3">✓ ${r.exact}</span></td>
           <td><span class="chip chip-1">~ ${r.tend}</span></td>
           <td>
