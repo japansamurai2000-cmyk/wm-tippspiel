@@ -115,10 +115,10 @@ function firebasePatch(path, payload) {
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 async function main() {
   const apiKey = process.env.FOOTBALL_API_KEY;
-  const dbUrl  = process.env.FIREBASE_DB_URL;
+  const dbUrl  = process.env.FIREBASE_DATABASE_URL || process.env.FIREBASE_DB_URL;
   const secret = process.env.FIREBASE_DB_SECRET;
   if (!apiKey || !dbUrl || !secret) {
-    console.error('Fehlende Umgebungsvariablen: FOOTBALL_API_KEY, FIREBASE_DB_URL, FIREBASE_DB_SECRET');
+    console.error('Fehlende Umgebungsvariablen: FOOTBALL_API_KEY, FIREBASE_DATABASE_URL, FIREBASE_DB_SECRET');
     process.exit(1);
   }
 
