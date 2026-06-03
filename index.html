@@ -702,10 +702,11 @@ function getCurrentPage() {
 }
 function renderCurrentPage() { renderPage(getCurrentPage()); }
 function renderPage(p) {
-  if (p === 'login')   renderLogin();
-  if (p === 'tipps')   renderTipps();
-  if (p === 'tabelle') renderTabelle();
-  if (p === 'alle')    renderAlle();
+  if (p === 'login')    renderLogin();
+  if (p === 'tipps')    renderTipps();
+  if (p === 'tabelle')  renderTabelle();
+  if (p === 'alle')     renderAlle();
+  if (p === 'endrunde') renderEndrunde();
   if (p === 'admin' && adminUnlocked) renderAdminMatches();
 }
 
