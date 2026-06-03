@@ -1703,40 +1703,55 @@ function renderEndrunde() {
   const SLOT_H = 70;
   const N32 = KO_MATCHES.filter(m => m.round === 'R32').length;
   const H = N32 * SLOT_H;
-  const rounds = ['R32','R16','QF','SF','3P','F'];
+  const rounds = ['R32','R16','QF','SF','F'];
   const locale = lang === 'de' ? 'de-DE' : 'en-GB';
+
+  function bMatch(m) {
+    const k = String(m.id);
+    const res = results[k];
+    const t1 = mTeam(m,'t1'), t2 = mTeam(m,'t2');
+    const t1w = res && +res.g1 > +res.g2, t2w = res && +res.g1 < +res.g2;
+    const ds = m.date
+      ? new Date(m.date+'T12:00:00').toLocaleDateString(locale,{day:'numeric',month:'short'})
+        + (m.time ? ' · '+m.time : '')
+      : '';
+    return `<div class="b-match${res?' settled':''}">
+      <div class="b-team${t1w?' winner':''}${t1==='???'?' tbd':''}">
+        <span class="b-team-name">${t1}</span>${res?`<span class="b-score">${res.g1}</span>`:''}
+      </div>
+      <div class="b-team${t2w?' winner':''}${t2==='???'?' tbd':''}">
+        <span class="b-team-name">${t2}</span>${res?`<span class="b-score">${res.g2}</span>`:''}
+      </div>
+      ${ds?`<div class="b-date">${ds}</div>`:''}
+    </div>`;
+  }
 
   let html = `<div class="card" style="padding:12px 8px;overflow:hidden">
     <div class="bracket-wrap"><div class="bracket" style="height:${H}px">`;
 
   rounds.forEach(rid => {
-    const matches = KO_MATCHES.filter(m => m.round === rid);
     html += `<div class="b-round">
       <div class="b-round-title">${KO_LABELS[lang][rid]}</div>
       <div class="b-slots">`;
-    matches.forEach(m => {
-      const k = String(m.id);
-      const res = results[k];
-      const t1 = mTeam(m,'t1'), t2 = mTeam(m,'t2');
-      const t1w = res && +res.g1 > +res.g2, t2w = res && +res.g1 < +res.g2;
-      const ds = m.date
-        ? new Date(m.date+'T12:00:00').toLocaleDateString(locale,{day:'numeric',month:'short'})
-          + (m.time ? ' · '+m.time : '')
-        : '';
-      html += `<div class="b-match${res?' settled':''}">
-        <div class="b-team${t1w?' winner':''}${t1==='???'?' tbd':''}">
-          <span class="b-team-name">${t1}</span>${res?`<span class="b-score">${res.g1}</span>`:''}
-        </div>
-        <div class="b-team${t2w?' winner':''}${t2==='???'?' tbd':''}">
-          <span class="b-team-name">${t2}</span>${res?`<span class="b-score">${res.g2}</span>`:''}
-        </div>
-        ${ds?`<div class="b-date">${ds}</div>`:''}
-      </div>`;
-    });
+    KO_MATCHES.filter(m => m.round === rid).forEach(m => { html += bMatch(m); });
     html += '</div></div>';
   });
 
-  html += '</div></div></div>';
+  // 3P below bracket, aligned under SF column (position 4 of 5)
+  const m3p = KO_MATCHES.find(m => m.round === '3P');
+  html += `</div>`;
+  if (m3p) {
+    html += `<div class="bracket" style="height:auto;margin-top:8px">
+      <div style="flex:3;min-width:0"></div>
+      <div class="b-round" style="flex:1">
+        <div class="b-round-title">${KO_LABELS[lang]['3P']}</div>
+        <div class="b-slots">${bMatch(m3p)}</div>
+      </div>
+      <div style="flex:1;min-width:0"></div>
+    </div>`;
+  }
+
+  html += '</div></div>';
 
   document.getElementById('endrundeContent').innerHTML = html;
 }
