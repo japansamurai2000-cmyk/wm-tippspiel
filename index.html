@@ -597,6 +597,7 @@ let currentUser = localStorage.getItem('wm2026_user') || null;
 let tipFilterVal = 'all';
 let alleFilterVal = 'all';
 let adminUnlocked = false;
+let koTeams = {};   // { matchId: { t1, t2 } } — geladen aus Firebase
 let saveTimer = null;
 
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
