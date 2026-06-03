@@ -740,7 +740,7 @@ function renderLogin() {
   if (currentUser) {
     const p = PARTICIPANTS.find(x => x.name === currentUser);
     const s = userStats(currentUser);
-    const pct = Math.round((s.tipped / MATCHES.length) * 100);
+    const pct = Math.round((s.tipped / (MATCHES.length + KO_MATCHES.length)) * 100);
     const rank = rankings.findIndex(r => r.name === currentUser) + 1;
     document.getElementById('myStatusCard').style.display = 'block';
     document.getElementById('myStatusTitle').innerHTML = `${p.av} ${p.name} — ${t('status_title')}`;
