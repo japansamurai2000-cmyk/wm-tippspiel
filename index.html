@@ -1556,20 +1556,8 @@ function renderTabelle() {
   // Group tables
   const wrap = document.getElementById('groupTablesWrap');
   wrap.innerHTML = '';
-  Object.entries(GROUPS).forEach(([g, teams]) => {
-    const rows = teams.map(name => ({ name, w:0,d:0,l:0,gf:0,ga:0,pts:0 }));
-    MATCHES.filter(m => m.group === g).forEach(m => {
-      const res = results[String(m.id)];
-      if (!res) return;
-      const a = rows.find(r => r.name === m.t1);
-      const b = rows.find(r => r.name === m.t2);
-      a.gf += +res.g1; a.ga += +res.g2;
-      b.gf += +res.g2; b.ga += +res.g1;
-      if (+res.g1 > +res.g2) { a.w++; a.pts+=3; b.l++; }
-      else if (+res.g1 < +res.g2) { b.w++; b.pts+=3; a.l++; }
-      else { a.d++; a.pts++; b.d++; b.pts++; }
-    });
-    rows.sort((a,b) => b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga));
+  Object.entries(GROUPS).forEach(([g]) => {
+    const rows = computeGroupStandings(g);
     const div = document.createElement('div');
     div.className = 'card'; div.style.padding = '0';
     div.innerHTML = `<div class="group-head" style="border-radius:10px 10px 0 0">${t('group_lbl')} ${g}</div>
