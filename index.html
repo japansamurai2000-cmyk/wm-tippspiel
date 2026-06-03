@@ -1448,9 +1448,9 @@ function renderTipps() {
       const tip = ut[k] || {};
       const res = results[k];
       const pts = res ? calcPts(tip, res) : null;
-      const chipHtml = pts === 3 ? '<span class="chip chip-3">✓ 3 Pkt</span>' :
-                       pts === 1 ? '<span class="chip chip-1">~ 1 Pkt</span>' :
-                       pts === 0 ? '<span class="chip chip-0">✗ 0 Pkt</span>' : '';
+      const chipHtml = pts === 3 ? `<span class="chip chip-3">✓ 3 ${t('col_pts_short')}</span>` :
+                       pts === 1 ? `<span class="chip chip-1">~ 1 ${t('col_pts_short')}</span>` :
+                       pts === 0 ? `<span class="chip chip-0">✗ 0 ${t('col_pts_short')}</span>` : '';
       const tm1 = mTeam(m, 't1'), tm2 = mTeam(m, 't2');
       const badge = m.round
         ? `<span style="font-size:.62rem;background:var(--gold2);color:white;padding:1px 5px;border-radius:4px;font-weight:800">${KO_LABELS[lang][m.round]}</span>`
