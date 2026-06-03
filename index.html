@@ -895,6 +895,16 @@ function renderTabelle() {
   });
 }
 
+// ─── KO HELPERS ───────────────────────────────────────────────────────────────
+function koLabel(m) {
+  const base = KO_LABELS[lang]?.[m.round] || m.round;
+  return ['3P','F'].includes(m.round) ? base : `${base} ${m.num}`;
+}
+function mTeam(m, side) {
+  if (!m.round) return tn(m[side]);
+  return koTeams[String(m.id)]?.[side] || '???';
+}
+
 // ─── SHARED HELPER: Tipp-Karte für ein Spiel ──────────────────────────────────
 function matchTipCard(m) {
   const k = String(m.id);
