@@ -622,6 +622,7 @@ function boot() {
     const data = snap.val() || {};
     results = data.results || {};
     tips = data.tips || {};
+    koTeams = data.koTeams || {};
     renderCurrentPage();
     renderStartSchedule(); // schedule is always in DOM, sync regardless of active page
     updateHeader();
