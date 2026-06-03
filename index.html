@@ -1371,6 +1371,25 @@ function renderPage(p) {
 }
 
 function showLoginPage() { goTo('login'); }
+
+function updateNavBadge() {
+  const btn = document.getElementById('nav-tipps');
+  if (!btn) return;
+  if (!currentUser) { btn.textContent = t('nav_tipps'); return; }
+  const ut = tips[currentUser] || {};
+  const open = [...MATCHES, ...KO_MATCHES].filter(m => {
+    if (results[String(m.id)]) return false;
+    if (isMatchLocked(m)) return false;
+    const tip = ut[String(m.id)];
+    return !tip || tip.g1 == null;
+  }).length;
+  if (open > 0) {
+    btn.innerHTML = `✏️ ${lang === 'de' ? 'Meine Tipps' : 'My Tips'} <span style="background:var(--red);color:white;border-radius:10px;padding:1px 6px;font-size:.7rem;margin-left:3px">${open}</span>`;
+  } else {
+    btn.textContent = t('nav_tipps');
+  }
+}
+
 function updateHeader() {
   const p = PARTICIPANTS.find(x => x.name === currentUser);
   document.getElementById('headerAvatar').innerHTML = p ? p.av : '👤';
