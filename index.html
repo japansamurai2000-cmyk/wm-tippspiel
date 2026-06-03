@@ -1514,7 +1514,7 @@ function renderTabelle() {
         <tr>
           <td class="medal">${medals[i] || (i+1)}</td>
           <td>${r.av} <strong>${r.name}</strong>${r.name===currentUser?' <span style="font-size:.7rem;background:var(--accent);color:white;padding:1px 6px;border-radius:8px">Du</span>':''}</td>
-          <td style="font-size:.82rem;color:var(--muted)">${r.tipped}/${MATCHES.length}</td>
+          <td style="font-size:.82rem;color:var(--muted)">${r.tipped}/${MATCHES.length + KO_MATCHES.length}</td>
           <td><span class="chip chip-3">✓ ${r.exact}</span></td>
           <td><span class="chip chip-1">~ ${r.tend}</span></td>
           <td>
