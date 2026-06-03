@@ -1339,8 +1339,9 @@ function updateHeader() {
 function renderLogin() {
   const grid = document.getElementById('loginGrid');
   const rankings = getRankings();
+  const statsByName = Object.fromEntries(rankings.map(r => [r.name, r]));
   grid.innerHTML = PARTICIPANTS.map(p => {
-    const s = userStats(p.name);
+    const s = statsByName[p.name];
     const isMe = p.name === currentUser;
     return `<div class="name-btn${isMe?' active':''}" onclick="selectUser('${p.name}')">
       <div class="av">${p.av}</div>
@@ -1355,7 +1356,7 @@ function renderLogin() {
   // My status card
   if (currentUser) {
     const p = PARTICIPANTS.find(x => x.name === currentUser);
-    const s = userStats(currentUser);
+    const s = statsByName[currentUser];
     const pct = Math.round((s.tipped / (MATCHES.length + KO_MATCHES.length)) * 100);
     const rank = rankings.findIndex(r => r.name === currentUser) + 1;
     document.getElementById('myStatusCard').style.display = 'block';
