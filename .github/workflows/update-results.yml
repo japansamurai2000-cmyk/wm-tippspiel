@@ -20,7 +20,7 @@ jobs:
 
       - name: Ergebnisse holen und in Firebase schreiben
         env:
-          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
-          FIREBASE_DB_URL:   ${{ secrets.FIREBASE_DB_URL }}
-          FIREBASE_DB_SECRET: ${{ secrets.FIREBASE_DB_SECRET }}
+          FOOTBALL_API_KEY:    ${{ secrets.FOOTBALL_API_KEY }}
+          FIREBASE_DATABASE_URL: ${{ secrets.FIREBASE_DATABASE_URL }}
+          FIREBASE_DB_SECRET:  ${{ secrets.FIREBASE_DB_SECRET }}
         run: node .github/scripts/update-results.js
