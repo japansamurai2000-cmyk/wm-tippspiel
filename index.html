@@ -1738,15 +1738,6 @@ function renderEndrunde() {
 
   html += '</div></div></div>';
 
-  // 3rd place separately below bracket
-  const m3p = KO_MATCHES.find(m => m.round === '3P');
-  if (m3p) {
-    html += `<div style="margin-top:6px">
-      <div class="round-head" style="border-radius:8px 8px 0 0">${KO_LABELS[lang]['3P']}</div>
-      ${matchTipCard(m3p)}
-    </div>`;
-  }
-
   document.getElementById('endrundeContent').innerHTML = html;
 }
 
