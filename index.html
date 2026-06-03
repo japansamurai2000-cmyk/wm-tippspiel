@@ -216,6 +216,18 @@ nav { background: rgba(0,0,0,.28); }
 .config-box { background: #1e293b; color: #e2e8f0; border-radius: 8px; padding: 16px; font-family: monospace; font-size: .8rem; line-height: 1.7; overflow-x: auto; margin: 14px 0; }
 .config-highlight { color: #fbbf24; }
 
+/* ─── ROUND HEAD (KO) ─── */
+.round-head {
+  background: linear-gradient(90deg, var(--gold2), var(--gold));
+  color: white; padding: 11px 16px; font-weight: 800; font-size: .82rem;
+  letter-spacing: .6px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+}
+.round-head::before { content: '🏆'; font-size: .85rem; opacity: .9; }
+.team-in {
+  background: #1e293b; color: #e2e8f0; border: 1.5px solid #334155;
+  border-radius: 6px; padding: 4px 8px; font-size: .8rem; width: 100%;
+}
+
 /* ─── MISC ─── */
 .empty { text-align: center; padding: 48px 20px; color: var(--muted); }
 .empty .ei { font-size: 2.8rem; margin-bottom: 10px; }
