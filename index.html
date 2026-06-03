@@ -752,7 +752,7 @@ function renderLogin() {
         </div>
         <button class="btn btn-primary" onclick="goTo('tipps')" style="font-size:.85rem;padding:8px 16px">${t('enter_tips')}</button>
       </div>
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">${s.tipped} ${t('tipped_of')} ${MATCHES.length} ${t('games_tipped')}</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">${s.tipped} ${t('tipped_of')} ${MATCHES.length + KO_MATCHES.length} ${t('games_tipped')}</div>
       <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
     `;
   } else {
