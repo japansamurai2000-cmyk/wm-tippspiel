@@ -668,7 +668,7 @@ function calcPts(tip, res) {
 function userStats(name) {
   const ut = tips[name] || {};
   let pts = 0, exact = 0, tend = 0, counted = 0, tipped = 0;
-  MATCHES.forEach(m => {
+  [...MATCHES, ...KO_MATCHES].forEach(m => {
     const k = String(m.id);
     const tip = ut[k];
     if (tip && tip.g1 != null) tipped++;
