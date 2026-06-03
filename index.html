@@ -1583,11 +1583,11 @@ function matchTipCard(m) {
 // ─── ALLE TIPPS ───────────────────────────────────────────────────────────────
 function renderAlle() {
   const fr = document.getElementById('alleFilterRow');
-  fr.innerHTML = `<button class="fb ${alleFilterVal==='all'?'on':''}" onclick="alleFilter('all',this)">Alle</button>`;
+  fr.innerHTML = `<button class="fb ${alleFilterVal==='all'?'on':''}" onclick="alleFilter('all',this)">${t('filter_all')}</button>`;
   Object.keys(GROUPS).forEach(g => {
-    fr.innerHTML += `<button class="fb ${alleFilterVal===g?'on':''}" onclick="alleFilter('${g}',this)">Gruppe ${g}</button>`;
+    fr.innerHTML += `<button class="fb ${alleFilterVal===g?'on':''}" onclick="alleFilter('${g}',this)">${t('group_lbl')} ${g}</button>`;
   });
-  fr.innerHTML += `<button class="fb ${alleFilterVal==='KO'?'on':''}" onclick="alleFilter('KO',this)">🏆 Endrunde</button>`;
+  fr.innerHTML += `<button class="fb ${alleFilterVal==='KO'?'on':''}" onclick="alleFilter('KO',this)">${t('nav_endrunde')}</button>`;
   let filtered;
   if (alleFilterVal === 'all') filtered = [...MATCHES, ...KO_MATCHES];
   else if (alleFilterVal === 'KO') filtered = KO_MATCHES;
