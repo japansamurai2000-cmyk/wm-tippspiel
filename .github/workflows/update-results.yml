@@ -1,0 +1,26 @@
+name: WM Ergebnisse aktualisieren
+
+on:
+  schedule:
+    # Täglich um 06:00 UTC (= 08:00 MESZ) — alle Vortagsergebnisse sind dann durch
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Jederzeit manuell auslösbar: GitHub → Actions → "WM Ergebnisse aktualisieren" → Run workflow
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ergebnisse holen und in Firebase schreiben
+        env:
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+          FIREBASE_DB_URL:   ${{ secrets.FIREBASE_DB_URL }}
+          FIREBASE_DB_SECRET: ${{ secrets.FIREBASE_DB_SECRET }}
+        run: node .github/scripts/update-results.js
