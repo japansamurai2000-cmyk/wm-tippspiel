@@ -1028,7 +1028,7 @@ function matchTipCard(m) {
   }).join('');
   return `<div class="all-match">
     <div class="all-head">
-      <span class="teams">${m.round ? koLabel(m) : `${t('gr_prefix')} ${m.group}`}: ${mTeam(m,'t1')} vs. ${mTeam(m,'t2')}${m.date&&m.round?` <span style="font-size:.7rem;font-weight:400;opacity:.7;margin-left:6px">${new Date(m.date+'T12:00:00').toLocaleDateString(lang==='de'?'de-DE':'en-GB',{day:'numeric',month:'short'})}</span>`:''}</span>${resHtml}
+      <span class="teams">${m.round ? koLabel(m) : `${t('gr_prefix')} ${m.group}`}: ${mTeam(m,'t1')} vs. ${mTeam(m,'t2')}${m.date?` <span style="font-size:.7rem;font-weight:400;opacity:.7;margin-left:6px">${new Date(m.date+'T12:00:00').toLocaleDateString(lang==='de'?'de-DE':'en-GB',{day:'numeric',month:'short'})}${m.time?' · '+m.time+' Uhr MESZ':''}</span>`:''}</span>${resHtml}
     </div>
     <div class="tips-grid">${cells}</div>
   </div>`;
