@@ -1682,15 +1682,53 @@ function alleFilter(val, el) {
 
 // ─── ENDRUNDE PAGE ────────────────────────────────────────────────────────────
 function renderEndrunde() {
-  const koRoundsOrder = ['R32','R16','QF','SF','3P','F'];
-  let html = '';
-  koRoundsOrder.forEach(rid => {
-    const roundMatches = KO_MATCHES.filter(m => m.round === rid);
-    html += `<div style="margin-bottom:4px">
-      <div class="round-head" style="border-radius:8px 8px 0 0">${KO_LABELS[lang]?.[rid] || rid}</div>
-      ${roundMatches.map(matchTipCard).join('')}
-    </div>`;
+  const SLOT_H = 70;
+  const N32 = KO_MATCHES.filter(m => m.round === 'R32').length;
+  const H = N32 * SLOT_H;
+  const rounds = ['R32','R16','QF','SF','F'];
+  const locale = lang === 'de' ? 'de-DE' : 'en-GB';
+
+  let html = `<div class="card" style="padding:12px 8px;overflow:hidden">
+    <div class="bracket-wrap"><div class="bracket" style="height:${H}px">`;
+
+  rounds.forEach(rid => {
+    const matches = KO_MATCHES.filter(m => m.round === rid);
+    html += `<div class="b-round">
+      <div class="b-round-title">${KO_LABELS[lang][rid]}</div>
+      <div class="b-slots">`;
+    matches.forEach(m => {
+      const k = String(m.id);
+      const res = results[k];
+      const t1 = mTeam(m,'t1'), t2 = mTeam(m,'t2');
+      const t1w = res && +res.g1 > +res.g2, t2w = res && +res.g1 < +res.g2;
+      const ds = m.date
+        ? new Date(m.date+'T12:00:00').toLocaleDateString(locale,{day:'numeric',month:'short'})
+          + (m.time ? ' · '+m.time : '')
+        : '';
+      html += `<div class="b-match${res?' settled':''}">
+        <div class="b-team${t1w?' winner':''}${t1==='???'?' tbd':''}">
+          <span class="b-team-name">${t1}</span>${res?`<span class="b-score">${res.g1}</span>`:''}
+        </div>
+        <div class="b-team${t2w?' winner':''}${t2==='???'?' tbd':''}">
+          <span class="b-team-name">${t2}</span>${res?`<span class="b-score">${res.g2}</span>`:''}
+        </div>
+        ${ds?`<div class="b-date">${ds}</div>`:''}
+      </div>`;
+    });
+    html += '</div></div>';
   });
+
+  html += '</div></div></div>';
+
+  // 3rd place separately below bracket
+  const m3p = KO_MATCHES.find(m => m.round === '3P');
+  if (m3p) {
+    html += `<div style="margin-top:6px">
+      <div class="round-head" style="border-radius:8px 8px 0 0">${KO_LABELS[lang]['3P']}</div>
+      ${matchTipCard(m3p)}
+    </div>`;
+  }
+
   document.getElementById('endrundeContent').innerHTML = html;
 }
 
