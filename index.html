@@ -1442,7 +1442,7 @@ function renderTipps() {
   Object.keys(byDate).sort().forEach(d => {
     const isToday = d === today;
     const headStyle = isToday ? 'style="background:var(--pitch2)"' : '';
-    html += `<div class="group-block"><div class="group-head" ${headStyle}>${isToday ? '🔴 Heute — ' : ''}${fmtDate(d)}</div>`;
+    html += `<div class="group-block"><div class="group-head" ${headStyle}>${isToday ? '🔴 ' + t('today_lbl') + ' — ' : ''}${fmtDate(d)}</div>`;
     byDate[d].forEach(m => {
       const k = String(m.id);
       const tip = ut[k] || {};
