@@ -1145,6 +1145,8 @@ function saveKoResults() {
     if (t1v || t2v) newKoTeams[k] = { t1: t1v || '', t2: t2v || '' };
     if (g1 !== '' && g2 !== '' && g1 != null && g2 != null) {
       newResults[k] = { g1: parseInt(g1), g2: parseInt(g2) };
+    } else {
+      delete newResults[k];
     }
   });
   Promise.all([
