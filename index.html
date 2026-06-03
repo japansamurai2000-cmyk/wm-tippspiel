@@ -656,8 +656,7 @@ function renderLogin() {
   grid.innerHTML = PARTICIPANTS.map(p => {
     const s = userStats(p.name);
     const isMe = p.name === currentUser;
-    return `<div class="name-btn${isMe?' active':''}" onclick="selectUser('${p.name}')"
-      style="${isMe?'border-color:var(--primary);background:#f0f7ff':''}">
+    return `<div class="name-btn${isMe?' active':''}" onclick="selectUser('${p.name}')">
       <div class="av">${p.av}</div>
       <div class="nm">${p.name}</div>
       <div class="pts">${s.pts} Pkt · ${s.tipped}/${MATCHES.length}</div>
