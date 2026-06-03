@@ -1462,6 +1462,7 @@ function selectUser(name) {
   if (name) localStorage.setItem('wm2026_user', name);
   else localStorage.removeItem('wm2026_user');
   updateHeader();
+  updateNavBadge();
   renderLogin();
   if (name) { toast(`👋 ${t('hello')} ${name}!`); goTo('tipps'); }
 }
