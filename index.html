@@ -1519,25 +1519,31 @@ function renderTipps() {
       const chipHtml = pts === 3 ? `<span class="chip chip-3">✓ 3 ${t('col_pts_short')}</span>` :
                        pts === 1 ? `<span class="chip chip-1">~ 1 ${t('col_pts_short')}</span>` :
                        pts === 0 ? `<span class="chip chip-0">✗ 0 ${t('col_pts_short')}</span>` : '';
+      const locked = !res && isMatchLocked(m);
+      const cd = (!res && !locked) ? timeUntil(m.date, m.time) : null;
       const tm1 = mTeam(m, 't1'), tm2 = mTeam(m, 't2');
       const badge = m.round
         ? `<span style="font-size:.62rem;background:var(--gold2);color:white;padding:1px 5px;border-radius:4px;font-weight:800">${KO_LABELS[lang][m.round]}</span>`
         : `<span style="font-size:.62rem;background:var(--navy3);color:white;padding:1px 5px;border-radius:4px;font-weight:800">${t('gr_prefix')} ${m.group}</span>`;
       const infoRow = res
         ? `${t('result_lbl')}: ${res.g1}:${res.g2} ${chipHtml}`
-        : `${m.time ? `⏰ ${m.time} · ` : ''}${badge}`;
-      html += `<div class="match-row${res ? ' settled' : ''}">
+        : locked
+          ? `<span class="locked-lbl">🔒 ${lang==='de'?'Gestartet':'Kicked off'}</span> · ${badge}`
+          : `${m.time ? `⏰ ${m.time}${cd ? ` · <span class="cdown">${cd}</span>` : ''} · ` : ''}${badge}`;
+      html += `<div class="match-row${res ? ' settled' : locked ? ' locked' : ''}">
         <div class="t-name">${tm1}</div>
         <div>
           <div class="score-wrap">
             <input class="score-in" type="number" min="0" max="30"
+              id="tip${m.id}g1"
               value="${tip.g1 != null ? tip.g1 : ''}" placeholder="?"
-              ${res ? 'readonly' : ''}
+              ${res || locked ? 'readonly' : ''}
               oninput="onTipInput(${m.id},'g1',this.value)">
             <span class="sep">:</span>
             <input class="score-in" type="number" min="0" max="30"
+              id="tip${m.id}g2"
               value="${tip.g2 != null ? tip.g2 : ''}" placeholder="?"
-              ${res ? 'readonly' : ''}
+              ${res || locked ? 'readonly' : ''}
               oninput="onTipInput(${m.id},'g2',this.value)">
           </div>
           <div class="result-row">${infoRow}</div>
