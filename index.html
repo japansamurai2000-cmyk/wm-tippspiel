@@ -1081,6 +1081,38 @@ function renderAdminMatches() {
     });
     html += '</div>';
   });
+
+  // KO-Runde
+  html += `<div style="margin:20px 0 8px;padding:12px 0 0;border-top:2px solid var(--border)">
+    <strong style="color:var(--navy);font-size:.95rem">🏆 Endrunde — Teamname &amp; Ergebnis</strong>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:4px">Teamnamen eintragen sobald bekannt, Ergebnis nach Abpfiff.</p>
+  </div>
+  <button class="btn btn-accent" onclick="saveKoResults()" style="margin-bottom:16px">💾 Endrunde speichern</button>`;
+
+  const koRoundsOrder = ['R32','R16','QF','SF','3P','F'];
+  koRoundsOrder.forEach(rid => {
+    html += `<div class="group-block" style="margin-bottom:12px"><div class="round-head">${KO_LABELS.de[rid]}</div>`;
+    KO_MATCHES.filter(m => m.round === rid).forEach(m => {
+      const k = String(m.id);
+      const res = results[k] || {};
+      const kt = koTeams[k] || {};
+      html += `<div class="match-row" style="grid-template-columns:1fr 120px 1fr;gap:6px;padding:10px 12px">
+        <div>
+          <input type="text" class="team-in" placeholder="Team 1" id="ko${k}t1" value="${kt.t1 || ''}">
+        </div>
+        <div class="score-wrap">
+          <input class="score-in" type="number" min="0" max="30" id="r${k}g1" value="${res.g1 != null?res.g1:''}" placeholder="?">
+          <span class="sep">:</span>
+          <input class="score-in" type="number" min="0" max="30" id="r${k}g2" value="${res.g2 != null?res.g2:''}" placeholder="?">
+        </div>
+        <div style="text-align:right">
+          <input type="text" class="team-in" placeholder="Team 2" id="ko${k}t2" value="${kt.t2 || ''}">
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+
   document.getElementById('adminContent').innerHTML = html;
 }
 function saveResults() {
