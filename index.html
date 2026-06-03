@@ -1538,13 +1538,15 @@ function renderTipps() {
               id="tip${m.id}g1"
               value="${tip.g1 != null ? tip.g1 : ''}" placeholder="?"
               ${res || locked ? 'readonly' : ''}
-              oninput="onTipInput(${m.id},'g1',this.value)">
+              oninput="onTipInput(${m.id},'g1',this.value)"
+              onkeydown="onTipKey(event,${m.id},'g1')">
             <span class="sep">:</span>
             <input class="score-in" type="number" min="0" max="30"
               id="tip${m.id}g2"
               value="${tip.g2 != null ? tip.g2 : ''}" placeholder="?"
               ${res || locked ? 'readonly' : ''}
-              oninput="onTipInput(${m.id},'g2',this.value)">
+              oninput="onTipInput(${m.id},'g2',this.value)"
+              onkeydown="onTipKey(event,${m.id},'g2')">
           </div>
           <div class="result-row">${infoRow}</div>
         </div>
