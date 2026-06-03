@@ -1835,23 +1835,35 @@ function renderAdminMatches() {
 
   document.getElementById('adminContent').innerHTML = html;
 }
-function saveResults() {
+function saveAllAdmin() {
   const newResults = { ...results };
+  const newKoTeams = { ...koTeams };
   MATCHES.forEach(m => {
     const k = String(m.id);
     const g1 = document.getElementById(`r${k}g1`)?.value;
     const g2 = document.getElementById(`r${k}g2`)?.value;
     if (g1 !== '' && g2 !== '' && g1 != null && g2 != null) {
       newResults[k] = { g1: parseInt(g1), g2: parseInt(g2) };
-    } else {
-      delete newResults[k];
-    }
+    } else { delete newResults[k]; }
   });
-  db.ref('wm2026/results').set(newResults, err => {
-    if (err) toast('❌ Fehler!');
-    else toast(t('results_saved'));
+  KO_MATCHES.forEach(m => {
+    const k = String(m.id);
+    const g1 = document.getElementById(`r${k}g1`)?.value;
+    const g2 = document.getElementById(`r${k}g2`)?.value;
+    const t1v = document.getElementById(`ko${k}t1`)?.value.trim();
+    const t2v = document.getElementById(`ko${k}t2`)?.value.trim();
+    if (t1v || t2v) newKoTeams[k] = { t1: t1v || '', t2: t2v || '' };
+    if (g1 !== '' && g2 !== '' && g1 != null && g2 != null) {
+      newResults[k] = { g1: parseInt(g1), g2: parseInt(g2) };
+    } else { delete newResults[k]; }
   });
+  Promise.all([
+    db.ref('wm2026/results').set(newResults),
+    db.ref('wm2026/koTeams').set(newKoTeams),
+  ]).then(() => toast(t('results_saved'))).catch(() => toast(t('err_save')));
 }
+
+function saveResults() {
 
 function saveKoResults() {
   const newResults = { ...results };
