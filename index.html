@@ -1562,11 +1562,22 @@ function onTipInput(matchId, side, val) {
   const k = String(matchId);
   if (!tips[currentUser][k]) tips[currentUser][k] = {};
   tips[currentUser][k][side] = val === '' ? null : parseInt(val);
-  if (side === 'g1' && val !== '') {
-    const next = document.getElementById(`tip${matchId}g2`);
-    if (next && !next.readOnly) { next.focus(); next.select(); }
-  }
   scheduleSave();
+}
+
+function onTipKey(e, matchId, side) {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  let next;
+  if (side === 'g1') {
+    next = document.getElementById(`tip${matchId}g2`);
+  } else {
+    const all = [...document.querySelectorAll('input.score-in:not([readonly])')];
+    const cur = document.getElementById(`tip${matchId}g2`);
+    const idx = all.indexOf(cur);
+    next = idx !== -1 ? all[idx + 1] : null;
+  }
+  if (next) { next.focus(); next.select(); }
 }
 
 function tipFilter(val, el) {
