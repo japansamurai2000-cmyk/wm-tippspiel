@@ -1756,7 +1756,7 @@ function saveKoResults() {
   Promise.all([
     db.ref('wm2026/results').set(newResults),
     db.ref('wm2026/koTeams').set(newKoTeams),
-  ]).then(() => toast('✅ Endrunde gespeichert!')).catch(() => toast('❌ Fehler!'));
+  ]).then(() => toast(t('ko_save_btn').replace('💾 ','✅ ').replace('speichern','gespeichert!').replace('Rounds','rounds saved!'))).catch(() => toast(t('err_save')));
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
