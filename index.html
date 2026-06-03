@@ -1769,7 +1769,7 @@ function renderStartSchedule() {
   const upcoming = [...MATCHES, ...KO_MATCHES]
     .filter(m => m.date && m.date >= today)
     .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id)
-    .slice(0, 4);
+    .slice(0, 6);
   const el = document.getElementById('scheduleContent');
   if (!upcoming.length) {
     el.innerHTML = `<div style="padding:16px;color:var(--muted);font-size:.88rem">${t('no_matches')}</div>`;
