@@ -1431,57 +1431,37 @@ function renderTipps() {
   document.getElementById('tippsSubline').textContent = `${s.tipped} ${t('tipped_of')} ${MATCHES.length + KO_MATCHES.length} ${t('games_tipped')} · ${s.pts} ${t('col_pts')}`;
 
   const ut = tips[currentUser] || {};
-  let html = '';
-  Object.entries(GROUPS).forEach(([g, teams]) => {
-    const gMatches = MATCHES.filter(m => m.group === g);
-    const visible = gMatches.filter(m => {
-      if (tipFilterVal === 'open') return !ut[String(m.id)] || ut[String(m.id)].g1 == null;
-      if (tipFilterVal === 'done') return ut[String(m.id)] && ut[String(m.id)].g1 != null;
-      return true;
-    });
-    if (!visible.length) return;
-    html += `<div class="group-block"><div class="group-head">${t('group_lbl')} ${g}: ${teams.map(tn).join(' · ')}</div>`;
-    visible.forEach(m => {
-      const k = String(m.id);
-      const tip = ut[k] || {};
-      const res = results[k];
-      const pts = res ? calcPts(tip, res) : null;
-      const chipHtml = pts === 3 ? '<span class="chip chip-3">✓ 3 Pkt</span>' :
-                       pts === 1 ? '<span class="chip chip-1">~ 1 Pkt</span>' :
-                       pts === 0 ? '<span class="chip chip-0">✗ 0 Pkt</span>' : '';
-      html += `<div class="match-row${res?' settled':''}">
-        <div class="t-name">${tn(m.t1)}</div>
-        <div>
-          <div class="score-wrap">
-            <input class="score-in" type="number" min="0" max="30"
-              value="${tip.g1 != null ? tip.g1 : ''}" placeholder="?"
-              ${res ? 'readonly' : ''}
-              oninput="onTipInput(${m.id},'g1',this.value)">
-            <span class="sep">:</span>
-            <input class="score-in" type="number" min="0" max="30"
-              value="${tip.g2 != null ? tip.g2 : ''}" placeholder="?"
-              ${res ? 'readonly' : ''}
-              oninput="onTipInput(${m.id},'g2',this.value)">
-          </div>
-          <div class="result-row">${res ? `${t('result_lbl')}: ${res.g1}:${res.g2} ${chipHtml}` : m.time ? `⏰ ${m.time} Uhr MESZ` : '—'}</div>
-        </div>
-        <div class="t-name t-right">${tn(m.t2)}</div>
-      </div>`;
-    });
-    html += '</div>';
+  const today = new Date().toISOString().split('T')[0];
+
+  const allVisible = [...MATCHES, ...KO_MATCHES].filter(m => {
+    if (tipFilterVal === 'open') return !ut[String(m.id)] || ut[String(m.id)].g1 == null;
+    if (tipFilterVal === 'done') return ut[String(m.id)] && ut[String(m.id)].g1 != null;
+    return true;
+  }).sort((a, b) => {
+    if (a.date !== b.date) return (a.date || 'zzzz') < (b.date || 'zzzz') ? -1 : 1;
+    const toMin = s => { if (!s) return 9999; const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+    return toMin(a.time) - toMin(b.time) || a.id - b.id;
   });
-  // KO-Runde
-  const koRoundsOrder = ['R32','R16','QF','SF','3P','F'];
-  koRoundsOrder.forEach(rid => {
-    const roundMatches = KO_MATCHES.filter(m => m.round === rid);
-    const visible = roundMatches.filter(m => {
-      if (tipFilterVal === 'open') return !ut[String(m.id)] || ut[String(m.id)].g1 == null;
-      if (tipFilterVal === 'done') return ut[String(m.id)] && ut[String(m.id)].g1 != null;
-      return true;
-    });
-    if (!visible.length) return;
-    html += `<div class="group-block"><div class="round-head">${KO_LABELS.de[rid]}</div>`;
-    visible.forEach(m => {
+
+  const byDate = {};
+  allVisible.forEach(m => {
+    const key = m.date || 'tbd';
+    if (!byDate[key]) byDate[key] = [];
+    byDate[key].push(m);
+  });
+
+  const locale = lang === 'de' ? 'de-DE' : 'en-GB';
+  const fmtDate = d => {
+    if (d === 'tbd') return 'Datum offen';
+    return new Date(d + 'T12:00:00').toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
+  let html = '';
+  Object.keys(byDate).sort().forEach(d => {
+    const isToday = d === today;
+    const headStyle = isToday ? 'style="background:var(--pitch2)"' : '';
+    html += `<div class="group-block"><div class="group-head" ${headStyle}>${isToday ? '🔴 Heute — ' : ''}${fmtDate(d)}</div>`;
+    byDate[d].forEach(m => {
       const k = String(m.id);
       const tip = ut[k] || {};
       const res = results[k];
@@ -1489,8 +1469,14 @@ function renderTipps() {
       const chipHtml = pts === 3 ? '<span class="chip chip-3">✓ 3 Pkt</span>' :
                        pts === 1 ? '<span class="chip chip-1">~ 1 Pkt</span>' :
                        pts === 0 ? '<span class="chip chip-0">✗ 0 Pkt</span>' : '';
-      const tm1 = mTeam(m, 't1'); const tm2 = mTeam(m, 't2');
-      html += `<div class="match-row${res?' settled':''}">
+      const tm1 = mTeam(m, 't1'), tm2 = mTeam(m, 't2');
+      const badge = m.round
+        ? `<span style="font-size:.62rem;background:var(--gold2);color:white;padding:1px 5px;border-radius:4px;font-weight:800">${KO_LABELS[lang][m.round]}</span>`
+        : `<span style="font-size:.62rem;background:var(--navy3);color:white;padding:1px 5px;border-radius:4px;font-weight:800">${t('gr_prefix')} ${m.group}</span>`;
+      const infoRow = res
+        ? `${t('result_lbl')}: ${res.g1}:${res.g2} ${chipHtml}`
+        : `${m.time ? `⏰ ${m.time} · ` : ''}${badge}`;
+      html += `<div class="match-row${res ? ' settled' : ''}">
         <div class="t-name">${tm1}</div>
         <div>
           <div class="score-wrap">
@@ -1504,7 +1490,7 @@ function renderTipps() {
               ${res ? 'readonly' : ''}
               oninput="onTipInput(${m.id},'g2',this.value)">
           </div>
-          <div class="result-row">${res ? `${t('result_lbl')}: ${res.g1}:${res.g2} ${chipHtml}` : m.time ? `⏰ ${m.time} Uhr MESZ` : '—'}</div>
+          <div class="result-row">${infoRow}</div>
         </div>
         <div class="t-name t-right">${tm2}</div>
       </div>`;
