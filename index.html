@@ -991,6 +991,20 @@ function alleFilter(val, el) {
   renderAlle();
 }
 
+// ─── ENDRUNDE PAGE ────────────────────────────────────────────────────────────
+function renderEndrunde() {
+  const koRoundsOrder = ['R32','R16','QF','SF','3P','F'];
+  let html = '';
+  koRoundsOrder.forEach(rid => {
+    const roundMatches = KO_MATCHES.filter(m => m.round === rid);
+    html += `<div style="margin-bottom:4px">
+      <div class="round-head" style="border-radius:8px 8px 0 0">${KO_LABELS[lang]?.[rid] || rid}</div>
+      ${roundMatches.map(matchTipCard).join('')}
+    </div>`;
+  });
+  document.getElementById('endrundeContent').innerHTML = html;
+}
+
 // ─── SPIELPLAN AUF STARTSEITE ─────────────────────────────────────────────────
 let scheduleFilterVal = 'upcoming';
 function setScheduleFilter(val, el) {
