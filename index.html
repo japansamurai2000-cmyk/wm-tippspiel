@@ -1556,6 +1556,10 @@ function onTipInput(matchId, side, val) {
   const k = String(matchId);
   if (!tips[currentUser][k]) tips[currentUser][k] = {};
   tips[currentUser][k][side] = val === '' ? null : parseInt(val);
+  if (side === 'g1' && val !== '') {
+    const next = document.getElementById(`tip${matchId}g2`);
+    if (next && !next.readOnly) { next.focus(); next.select(); }
+  }
   scheduleSave();
 }
 
