@@ -1123,6 +1123,8 @@ function saveResults() {
     const g2 = document.getElementById(`r${k}g2`)?.value;
     if (g1 !== '' && g2 !== '' && g1 != null && g2 != null) {
       newResults[k] = { g1: parseInt(g1), g2: parseInt(g2) };
+    } else {
+      delete newResults[k];
     }
   });
   db.ref('wm2026/results').set(newResults, err => {
