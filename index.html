@@ -1409,25 +1409,7 @@ function renderTipps() {
   const s = userStats(currentUser);
   document.getElementById('tippsHeading').innerHTML = `${p.av} ${p.name} — Meine Tipps`;
 
-  // Mini-Ranking
-  const rankings = getRankings();
-  const medals = ['🥇','🥈','🥉'];
-  document.getElementById('miniRanking').innerHTML = `
-    <div class="card" style="padding:12px 14px">
-      <div style="font-size:.75rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🏆 Aktuelles Ranking</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        ${rankings.map((r, i) => `
-          <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;
-            background:${r.name===currentUser?'#fffbeb':'transparent'};
-            border:${r.name===currentUser?'1.5px solid var(--gold)':'1.5px solid transparent'}">
-            <span style="font-size:.95rem;width:22px;text-align:center">${medals[i]||i+1}</span>
-            <span style="font-size:.9rem">${r.av}</span>
-            <strong style="font-size:.88rem;flex:1">${r.name}${r.name===currentUser?' <span style="font-size:.65rem;background:var(--gold);color:white;padding:1px 5px;border-radius:6px;vertical-align:middle">Du</span>':''}</strong>
-            <span class="pts-big" style="font-size:1rem">${r.pts}</span>
-            <span style="font-size:.72rem;color:var(--muted)">Pkt</span>
-          </div>`).join('')}
-      </div>
-    </div>`;
+  document.getElementById('miniRanking').innerHTML = '';
   document.getElementById('tippsSubline').textContent = `${s.tipped} ${t('tipped_of')} ${MATCHES.length + KO_MATCHES.length} ${t('games_tipped')} · ${s.pts} ${t('col_pts')}`;
 
   const ut = tips[currentUser] || {};
