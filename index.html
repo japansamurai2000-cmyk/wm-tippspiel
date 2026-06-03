@@ -693,10 +693,7 @@ function goTo(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  const pages = ['login','tipps','tabelle','alle','admin'];
-  const navBtns = document.querySelectorAll('.nav-btn');
-  const idx = pages.indexOf(page);
-  if (idx >= 0) navBtns[idx]?.classList.add('active');
+  document.getElementById('nav-' + page)?.classList.add('active');
   renderPage(page);
 }
 function getCurrentPage() {
