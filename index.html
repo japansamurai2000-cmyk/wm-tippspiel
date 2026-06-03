@@ -981,7 +981,11 @@ function renderAlle() {
   Object.keys(GROUPS).forEach(g => {
     fr.innerHTML += `<button class="fb ${alleFilterVal===g?'on':''}" onclick="alleFilter('${g}',this)">Gruppe ${g}</button>`;
   });
-  const filtered = alleFilterVal === 'all' ? MATCHES : MATCHES.filter(m => m.group === alleFilterVal);
+  fr.innerHTML += `<button class="fb ${alleFilterVal==='KO'?'on':''}" onclick="alleFilter('KO',this)">🏆 Endrunde</button>`;
+  let filtered;
+  if (alleFilterVal === 'all') filtered = [...MATCHES, ...KO_MATCHES];
+  else if (alleFilterVal === 'KO') filtered = KO_MATCHES;
+  else filtered = MATCHES.filter(m => m.group === alleFilterVal);
   document.getElementById('alleContent').innerHTML = filtered.map(matchTipCard).join('');
 }
 function alleFilter(val, el) {
