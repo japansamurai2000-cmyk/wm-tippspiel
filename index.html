@@ -1381,6 +1381,11 @@ function updateNavBadge() {
   const open = [...MATCHES, ...KO_MATCHES].filter(m => {
     if (results[String(m.id)]) return false;
     if (isMatchLocked(m)) return false;
+    if (m.round) {
+      const t1 = autoKoTeams[m.id]?.t1 || koTeams[m.id]?.t1;
+      const t2 = autoKoTeams[m.id]?.t2 || koTeams[m.id]?.t2;
+      if (!t1 || !t2) return false;
+    }
     const tip = ut[String(m.id)];
     return !tip || tip.g1 == null;
   }).length;
