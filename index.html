@@ -927,7 +927,7 @@ function matchTipCard(m) {
   }).join('');
   return `<div class="all-match">
     <div class="all-head">
-      <span class="teams">${t('gr_prefix')} ${m.group}: ${tn(m.t1)} vs. ${tn(m.t2)}</span>${resHtml}
+      <span class="teams">${m.round ? koLabel(m) : `${t('gr_prefix')} ${m.group}`}: ${mTeam(m,'t1')} vs. ${mTeam(m,'t2')}</span>${resHtml}
     </div>
     <div class="tips-grid">${cells}</div>
   </div>`;
