@@ -1434,7 +1434,7 @@ function renderTipps() {
 
   const locale = lang === 'de' ? 'de-DE' : 'en-GB';
   const fmtDate = d => {
-    if (d === 'tbd') return 'Datum offen';
+    if (d === 'tbd') return t('date_tbd');
     return new Date(d + 'T12:00:00').toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   };
 
