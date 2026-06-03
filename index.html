@@ -1241,6 +1241,24 @@ let koTeams = {};   // { matchId: { t1, t2 } } — manuell via Firebase
 let autoKoTeams = {}; // automatisch berechnet aus Gruppenergebnissen
 let saveTimer = null;
 
+// ─── MATCH TIMING HELPERS ────────────────────────────────────────────────────
+function isMatchLocked(m) {
+  if (!m.date || !m.time) return false;
+  // Times stored as MESZ (UTC+2)
+  const kickoff = new Date(`${m.date}T${m.time}:00+02:00`);
+  return Date.now() >= kickoff.getTime();
+}
+
+function timeUntil(date, time) {
+  if (!date || !time) return null;
+  const kickoff = new Date(`${date}T${time}:00+02:00`);
+  const diff = kickoff - Date.now();
+  if (diff <= 0 || diff > 24 * 3600000) return null;
+  const h = Math.floor(diff / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  return h > 0 ? `in ${h}h ${m}m` : `in ${m}m`;
+}
+
 // ─── FIREBASE INIT ────────────────────────────────────────────────────────────
 function boot() {
   if (firebaseConfig.apiKey.startsWith('__')) {
