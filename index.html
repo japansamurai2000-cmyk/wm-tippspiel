@@ -1553,7 +1553,8 @@ function koLabel(m) {
 function mTeam(m, side) {
   if (!m.round) return tn(m[side]);
   const id = String(m.id);
-  return autoKoTeams[id]?.[side] || koTeams[id]?.[side] || '???';
+  const name = autoKoTeams[id]?.[side] || koTeams[id]?.[side] || '???';
+  return name === '???' ? name : tn(name);
 }
 
 // ─── SHARED HELPER: Tipp-Karte für ein Spiel ──────────────────────────────────
