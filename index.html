@@ -1013,40 +1013,36 @@ function setScheduleFilter(val, el) {
 }
 function renderStartSchedule() {
   const today = new Date().toISOString().split('T')[0];
-  const byDate = {};
-  MATCHES.forEach(m => {
-    const d = m.date || '9999-12-31';
-    if (!byDate[d]) byDate[d] = [];
-    byDate[d].push(m);
-  });
-  const dates = Object.keys(byDate).sort().filter(d => {
-    if (scheduleFilterVal === 'upcoming') return d >= today;
-    return true;
-  });
-  const locale = lang === 'de' ? 'de-DE' : 'en-GB';
-  const fmt = d => {
-    const obj = new Date(d + 'T12:00:00');
-    const day  = obj.toLocaleDateString(locale, { weekday: 'long' });
-    const date = obj.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
-    return `${day}, ${date}`;
-  };
+  const upcoming = [...MATCHES, ...KO_MATCHES]
+    .filter(m => m.date && m.date >= today)
+    .sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : a.id - b.id)
+    .slice(0, 4);
   const el = document.getElementById('scheduleContent');
-  if (!dates.length) {
+  if (!upcoming.length) {
     el.innerHTML = `<div style="padding:16px;color:var(--muted);font-size:.88rem">${t('no_matches')}</div>`;
     return;
   }
-  el.innerHTML = dates.map(d => {
+  const locale = lang === 'de' ? 'de-DE' : 'en-GB';
+  const fmt = d => {
+    const obj = new Date(d + 'T12:00:00');
+    return obj.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'long' });
+  };
+  // Group the 4 matches by date for the date header
+  const byDate = {};
+  upcoming.forEach(m => {
+    if (!byDate[m.date]) byDate[m.date] = [];
+    byDate[m.date].push(m);
+  });
+  el.innerHTML = Object.keys(byDate).sort().map(d => {
     const isToday = d === today;
-    return `
-      <div style="margin-bottom:4px">
-        <div style="padding:8px 12px;margin-bottom:4px;font-weight:700;font-size:.85rem;
-          background:${isToday?'var(--accent)':'var(--primary)'};color:white;border-radius:8px;
-          display:flex;align-items:center;gap:6px">
-          ${isToday?`🔴 ${t('today_lbl')} — `:'📅 '}${fmt(d)}
-          <span style="margin-left:auto;font-weight:400;font-size:.75rem;opacity:.8">${byDate[d].length} ${t('matches_lbl')}</span>
-        </div>
-        ${byDate[d].map(matchTipCard).join('')}
-      </div>`;
+    return `<div style="margin-bottom:4px">
+      <div style="padding:8px 12px;margin-bottom:4px;font-weight:700;font-size:.85rem;
+        background:${isToday?'var(--accent)':'var(--primary)'};color:white;border-radius:8px;
+        display:flex;align-items:center;gap:6px">
+        ${isToday?`🔴 ${t('today_lbl')} — `:'📅 '}${fmt(d)}
+      </div>
+      ${byDate[d].map(matchTipCard).join('')}
+    </div>`;
   }).join('');
 }
 
