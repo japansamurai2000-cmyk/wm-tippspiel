@@ -1695,7 +1695,7 @@ function renderAdminMatches() {
 
   const koRoundsOrder = ['R32','R16','QF','SF','3P','F'];
   koRoundsOrder.forEach(rid => {
-    html += `<div class="group-block" style="margin-bottom:12px"><div class="round-head">${KO_LABELS.de[rid]}</div>`;
+    html += `<div class="group-block" style="margin-bottom:12px"><div class="round-head">${KO_LABELS[lang][rid]}</div>`;
     KO_MATCHES.filter(m => m.round === rid).forEach(m => {
       const k = String(m.id);
       const res = results[k] || {};
