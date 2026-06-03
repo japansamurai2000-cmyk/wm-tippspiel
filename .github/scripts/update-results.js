@@ -92,7 +92,7 @@ function fetchJson(url, headers = {}) {
 }
 
 function firebasePatch(path, payload) {
-  const dbUrl = process.env.FIREBASE_DB_URL.replace(/\/$/, '');
+  const dbUrl = (process.env.FIREBASE_DATABASE_URL || process.env.FIREBASE_DB_URL).replace(/\/$/, '');
   const secret = process.env.FIREBASE_DB_SECRET;
   const body = Buffer.from(JSON.stringify(payload));
   const url = new URL(`${dbUrl}${path}.json?auth=${secret}`);
