@@ -1341,7 +1341,7 @@ function renderLogin() {
     return `<div class="name-btn${isMe?' active':''}" onclick="selectUser('${p.name}')">
       <div class="av">${p.av}</div>
       <div class="nm">${p.name}</div>
-      <div class="pts">${s.pts} Pkt · ${s.tipped}/${MATCHES.length + KO_MATCHES.length}</div>
+      <div class="pts">${s.pts} ${t('col_pts_short')} · ${s.tipped}/${MATCHES.length + KO_MATCHES.length}</div>
     </div>`;
   }).join('') +
   `<div class="name-btn viewer" onclick="selectUser(null)">
