@@ -437,35 +437,19 @@ const firebaseConfig = {
 
 const ADMIN_PW = 'wm2026';
 
-function avatarSVG(o) {
-  const skin = o.skin || '#FDBCB4', hc = o.hc || '#5c3317';
-  let hair = '';
-  if (o.style === 'short')
-    hair = `<path d="M6 21 Q8 5 18 4 Q28 5 30 21 Q26 9 18 10 Q10 9 6 21Z" fill="${hc}"/>`;
-  else if (o.style === 'long')
-    hair = `<path d="M5 20 Q7 4 18 3 Q29 4 31 20 Q27 7 18 8 Q9 7 5 20Z M6 22 Q4 33 9 36 Q13 28 18 26 Q23 28 27 36 Q32 33 30 22" fill="${hc}"/>`;
-  else if (o.style === 'bun')
-    hair = `<path d="M6 21 Q8 5 18 4 Q28 5 30 21 Q26 9 18 10 Q10 9 6 21Z" fill="${hc}"/><circle cx="18" cy="4" r="4.5" fill="${hc}"/>`;
-  else if (o.style === 'kid')
-    hair = `<path d="M8 21 Q10 8 18 7 Q26 8 28 21 Q24 12 18 13 Q12 12 8 21Z" fill="${hc}"/>`;
-  const eyes = o.glasses
-    ? `<circle cx="13.8" cy="21" r="1.2" fill="#1e293b"/><circle cx="22.2" cy="21" r="1.2" fill="#1e293b"/><rect x="11" y="19" width="5.5" height="3.5" rx="1.5" fill="none" stroke="#4b5563" stroke-width=".7"/><rect x="19.5" y="19" width="5.5" height="3.5" rx="1.5" fill="none" stroke="#4b5563" stroke-width=".7"/><line x1="16.5" y1="20.75" x2="19.5" y2="20.75" stroke="#4b5563" stroke-width=".7"/>`
-    : `<circle cx="14" cy="21" r="1.5" fill="#1e293b"/><circle cx="22" cy="21" r="1.5" fill="#1e293b"/>`;
-  const beard = o.beard
-    ? `<path d="M11 25 Q14 31 18 32 Q22 31 25 25 Q22 28 18 29 Q14 28 11 25Z" fill="${hc}"/>`
-    : '';
-  return `<svg viewBox="0 0 36 36" width="1.2em" height="1.2em" style="vertical-align:-.2em;border-radius:50%;overflow:hidden"><circle cx="18" cy="18" r="18" fill="${o.bg}"/><circle cx="18" cy="23" r="12" fill="${skin}"/>${hair}${eyes}${beard}<path d="M14 26 Q18 29 22 26" stroke="#c27251" stroke-width="1" fill="none" stroke-linecap="round"/></svg>`;
+function av(src) {
+  return `<img src="${src}" style="height:1.5em;width:auto;vertical-align:middle">`;
 }
 
 const PARTICIPANTS = [
-  { name: 'Anja',  av: avatarSVG({ bg:'#f97316', hc:'#5c3317', style:'long' }) },
-  { name: 'Hatti', av: avatarSVG({ bg:'#0284c7', hc:'#374151', style:'short', beard:true }) },
-  { name: 'Oma',   av: avatarSVG({ bg:'#8b5cf6', hc:'#c4b5fd', style:'bun' }) },
-  { name: 'Opa',   av: avatarSVG({ bg:'#3b82f6', hc:'#9ca3af', style:'short', glasses:true }) },
-  { name: 'Eric',  av: avatarSVG({ bg:'#059669', hc:'#374151', style:'short' }) },
-  { name: 'Max',   av: avatarSVG({ bg:'#d97706', hc:'#7c4d2d', style:'short' }) },
-  { name: 'Mika',  av: avatarSVG({ bg:'#e11d48', hc:'#a55c3e', style:'kid', skin:'#ffe0cc' }) },
-  { name: 'Mune',  av: avatarSVG({ bg:'#10b981', hc:'#111827', style:'kid', skin:'#f5d0a9' }) },
+  { name: 'Anja',  av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh0EUIxNfm4xB311RKaJOaQqLuvS1Wem8SfHzfAANxV9QO74Xr8ww0MUcrebaKimWlyHFKTZlL_gRIGrO8icoODybaPGDkfYrff75GlNotp_jsrgrYA20bpvaC8-n7yLNXSM0ZRUR_dpyY/s400/pose_genki04_woman.png') },
+  { name: 'Hatti', av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiNt38GwHP41vz_L-s0SCiK6T2r-uqvwhEiYVmsGLwy95bXrBZpl0trxRPIHUhw6FqKem85bUI35CbudZGCwbdcdF0yFqDlNf8vJv_e_9fuzES2g-6cb2dSc1G80jtmx5cgyHHOq0SBcuax/s400/biyou_hige_busyohige.png') },
+  { name: 'Oma',   av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhLIygfMA8pUOaRroAIIHKl1S5a9CzgPZ7o_E-syA40zzGlkT-D2-4afE7xEcpr0Nr7lNgKFv3suKjShWSaHSojt2JtzTQ1SRxueFsoLmIK_L5SxQnOQCXDyfxCO_W3HrY2kG_SGZPoesc/s400/obaasan_face.png') },
+  { name: 'Opa',   av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwVGdkzEQNqYpvSmjq_DUx9Z6OqTU3BUQ8W35xQGApCQHiSX-UybrLWC1yeN2di7CWA385qoko-sLWyodYYj7XU7XWezVJrbyH3yp-d6XlRvDtVVCmVWVZtD61zihi-Op3C21y-XDDGmpd/s400/keirou_ojiichan_smile2.png') },
+  { name: 'Eric',  av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgNQ6VJcZk8GnrGip-4rz5BaKe4upFwN1R48PcASbAmeqfvATAKdyYeh7xFuQ6G8J-63TeeyOJq2b7gCh9AuQ0punlpFUDC8B6J43lJ2NOLgmoZJYhhQN1pU_4r-v3-piFxiaiM-6CgEtk/s400/pose_genki03_man.png') },
+  { name: 'Max',   av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpy4Fxva0fi5adGfcsTFDuEtqPpF6hRxpaukSs52ljpHl5TJt-oFpo_03FIaxNGTlYm7-bc5z2Y7DYRViI2gznr7iRLFNo8CcajM0Nf9kGgH5QTvSrsMrcGcc3ConDeQs4L4GoOlM6b--p/s400/daigakusei_man.png') },
+  { name: 'Mika',  av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgXY8tI_05ujRfz4vx4LMP9Hrs4uZFz6gGkU9M_UwvZ2JHpJ8mYvscOVSwtSWzZRSWwdP0sxCIB7umI10KIWRRYgS7Ej5fguowUzRBFJfCvRup_8BiqRnJivGcZ4rKE2-D3J0fgu7IkM8g/s400/stand1_front01_boy.png') },
+  { name: 'Mune',  av: av('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj5Z_kKKgkrnOMCuIs6BEHG-JaEJ97GqxcPZyjsrC0Ieiw_Kfx8Ws_DR2j6PGg-4Yvh7-l43S-djZP-AHuSmMdJGUqjWmt0IXVdxg2X7I8IAVH2gSL99Mo2CqTBuFB6iz8vlRJXx3gbC5U/s400/baby_aruku.png') },
 ];
 
 const GROUPS = {
