@@ -1171,8 +1171,12 @@ function computeAutoKoTeams() {
 
   function resolveR32src(src) {
     const pos=src[0], grp=src[1];
-    if(pos==='1') return st[grp]?.[0]?.name||null;
-    if(pos==='2') return st[grp]?.[1]?.name||null;
+    if(pos==='1'||pos==='2') {
+      const rows=st[grp]; if(!rows) return null;
+      const groupComplete=rows.every(r=>r.w+r.d+r.l===3);
+      if(!groupComplete) return null;
+      return rows[pos==='1'?0:1]?.name||null;
+    }
     if(pos==='3') {
       const from=thirdMap[grp]; if(!from) return null;
       return top8.find(t=>t.grp===from)?.name||null;
