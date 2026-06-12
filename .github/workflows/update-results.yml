@@ -2,8 +2,9 @@ name: WM Ergebnisse aktualisieren
 
 on:
   schedule:
-    # Täglich um 06:00 UTC (= 08:00 MESZ) — alle Vortagsergebnisse sind dann durch
-    - cron: '0 6 * * *'
+    - cron: '0 20 * * *'  # 22:00 MESZ — nach den Abendspielen
+    - cron: '0  2 * * *'  # 04:00 MESZ — nach den Nachtspielen
+    - cron: '0  6 * * *'  # 08:00 MESZ — Fallback für alle Vortagsergebnisse
   workflow_dispatch:
     # Jederzeit manuell auslösbar: GitHub → Actions → "WM Ergebnisse aktualisieren" → Run workflow
 
