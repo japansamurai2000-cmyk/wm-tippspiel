@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Navy background -->
+  <circle cx="256" cy="256" r="256" fill="#0a1628"/>
+
+  <!-- Gold outer ring -->
+  <circle cx="256" cy="256" r="218" fill="none" stroke="#f59e0b" stroke-width="8" opacity="0.5"/>
+
+  <!-- Football white base -->
+  <circle cx="256" cy="256" r="148" fill="#ffffff" stroke="#cccccc" stroke-width="1.5"/>
+
+  <!-- Classic soccer ball pattern (Telstar-style) -->
+  <!-- Center pentagon (black) -->
+  <path d="M256,168 L290,191 L278,230 L234,230 L222,191 Z" fill="#111111"/>
+
+  <!-- Top pentagon -->
+  <path d="M256,120 L290,143 L290,191 L256,168 L222,191 L222,143 Z" fill="#111111"/>
+
+  <!-- Top-right pentagon -->
+  <path d="M290,143 L336,143 L352,191 L312,218 L290,191 Z" fill="#111111"/>
+
+  <!-- Bottom-right pentagon -->
+  <path d="M312,218 L352,191 L368,240 L340,278 L290,270 Z" fill="#111111"/>
+
+  <!-- Bottom pentagon -->
+  <path d="M290,270 L278,310 L234,310 L222,270 L256,292 Z" fill="#111111"/>
+
+  <!-- Bottom-left pentagon -->
+  <path d="M222,270 L172,278 L144,240 L160,191 L200,218 Z" fill="#111111"/>
+
+  <!-- Top-left pentagon -->
+  <path d="M200,218 L160,191 L176,143 L222,143 L222,191 Z" fill="#111111"/>
+
+  <!-- Ball outline -->
+  <circle cx="256" cy="256" r="148" fill="none" stroke="#aaaaaa" stroke-width="2"/>
+
+  <!-- Gold star top -->
+  <polygon points="256,44 263,66 287,66 268,79 275,101 256,88 237,101 244,79 225,66 249,66"
+           fill="#f59e0b"/>
+
+  <!-- WM 2026 label at bottom -->
+  <text x="256" y="445" font-family="'Arial Black', Arial, sans-serif" font-size="42"
+        font-weight="900" text-anchor="middle" fill="#f59e0b" letter-spacing="3">2026</text>
+</svg>
