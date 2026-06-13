@@ -1438,7 +1438,8 @@ function renderLogin() {
     const p = PARTICIPANTS.find(x => x.name === currentUser);
     const s = statsByName[currentUser];
     const pct = Math.round((s.tipped / (TOTAL_MATCHES)) * 100);
-    const rank = rankings.findIndex(r => r.name === currentUser) + 1;
+    const myIdx = rankings.findIndex(r => r.name === currentUser);
+    const rank = myIdx >= 0 ? denseRanks(rankings)[myIdx] : rankings.length;
     document.getElementById('myStatusCard').style.display = 'block';
     document.getElementById('myStatusTitle').innerHTML = `${p.av} ${p.name} — ${t('status_title')}`;
     document.getElementById('myStatusBody').innerHTML = `
