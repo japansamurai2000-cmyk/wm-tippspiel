@@ -56,7 +56,7 @@ const MATCH_DATES = {
   'Ghana|Panama':'2026-06-18','Usbekistan|Kolumbien':'2026-06-18','Tschechien|Südafrika':'2026-06-18','Schweiz|Bosnien-Herzegowina':'2026-06-18','Kanada|Katar':'2026-06-19',
   'Mexiko|Südkorea':'2026-06-19','USA|Australien':'2026-06-19','Schottland|Marokko':'2026-06-20',
   'Brasilien|Haiti':'2026-06-20','Türkei|Paraguay':'2026-06-20','Niederlande|Schweden':'2026-06-20','Deutschland|Elfenbeinküste':'2026-06-20',
-  'Ecuador|Curaçao':'2026-06-21','Tunesien|Japan':'2026-06-21','Spanien|Saudi-Arabien':'2026-06-21','Belgien|Iran':'2026-06-21','Uruguay|Kap Verde':'2026-06-21',
+  'Ecuador|Curaçao':'2026-06-21','Tunesien|Japan':'2026-06-21','Spanien|Saudi-Arabien':'2026-06-21','Belgien|Iran':'2026-06-21','Uruguay|Kap Verde':'2026-06-22',
   'Neuseeland|Ägypten':'2026-06-22','Argentinien|Österreich':'2026-06-22','Frankreich|Irak':'2026-06-22',
   'Norwegen|Senegal':'2026-06-23','Jordanien|Algerien':'2026-06-23','Portugal|Usbekistan':'2026-06-23','England|Ghana':'2026-06-23',
   'Panama|Kroatien':'2026-06-24','Kolumbien|DR Kongo':'2026-06-24','Schweiz|Kanada':'2026-06-24','Bosnien-Herzegowina|Katar':'2026-06-24','Marokko|Haiti':'2026-06-24','Schottland|Brasilien':'2026-06-24',
