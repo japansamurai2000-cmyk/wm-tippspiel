@@ -11,6 +11,7 @@ const EN_TO_DE = {
   'Canada':'Kanada', 'Switzerland':'Schweiz', 'Qatar':'Katar',
   'Bosnia & Herzegovina':'Bosnien-Herzegowina',
   'Bosnia and Herzegovina':'Bosnien-Herzegowina',
+  'Bosnia-Herzegovina':'Bosnien-Herzegowina',
   'Brazil':'Brasilien', 'Morocco':'Marokko', 'Scotland':'Schottland', 'Haiti':'Haiti',
   'USA':'USA', 'United States':'USA', 'Paraguay':'Paraguay',
   'Australia':'Australien', 'Turkey':'Türkei', 'Türkiye':'Türkei',
