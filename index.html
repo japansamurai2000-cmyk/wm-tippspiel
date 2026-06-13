@@ -1458,6 +1458,7 @@ function renderLogin() {
   }
   // Home ranking
   const medals = ['🥇','🥈','🥉'];
+  const homeRanks = denseRanks(rankings);
   document.getElementById('homeRankingCard').style.display = 'block';
   document.getElementById('homeRankingContent').innerHTML = `
     <div style="display:flex;flex-direction:column;gap:5px">
@@ -1465,7 +1466,7 @@ function renderLogin() {
         <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;
           background:${r.name===currentUser?'#fffbeb':'transparent'};
           border:${r.name===currentUser?'1.5px solid var(--gold)':'1.5px solid transparent'}">
-          <span style="font-size:.95rem;width:22px;text-align:center">${medals[i]||i+1}</span>
+          <span style="font-size:.95rem;width:22px;text-align:center">${medals[homeRanks[i]-1]||homeRanks[i]}</span>
           <span>${r.av}</span>
           <strong style="font-size:.88rem;flex:1">${r.name}${r.name===currentUser?' <span style="font-size:.65rem;background:var(--gold);color:white;padding:1px 5px;border-radius:6px;vertical-align:middle">Du</span>':''}</strong>
           <span style="font-size:1rem;font-weight:900;color:var(--navy)">${r.pts}</span>
