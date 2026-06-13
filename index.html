@@ -1242,16 +1242,26 @@ let autoKoTeams = {}; // automatisch berechnet aus Gruppenergebnissen
 let saveTimer = null;
 
 // ─── MATCH TIMING HELPERS ────────────────────────────────────────────────────
+// 00:00 matches are listed on the "logical" match day but kick off at midnight
+// ENDING that day (= 00:00 of the next calendar day in MESZ). Build the correct
+// UTC timestamp using UTC arithmetic so it's independent of the client's timezone.
+function matchKickoff(date, time) {
+  if (time === '00:00') {
+    const d = new Date(date + 'T12:00:00Z');
+    d.setUTCDate(d.getUTCDate() + 1);
+    date = d.toISOString().split('T')[0];
+  }
+  return new Date(`${date}T${time}:00+02:00`);
+}
+
 function isMatchLocked(m) {
   if (!m.date || !m.time) return false;
-  // Times stored as MESZ (UTC+2)
-  const kickoff = new Date(`${m.date}T${m.time}:00+02:00`);
-  return Date.now() >= kickoff.getTime();
+  return Date.now() >= matchKickoff(m.date, m.time).getTime();
 }
 
 function timeUntil(date, time) {
   if (!date || !time) return null;
-  const kickoff = new Date(`${date}T${time}:00+02:00`);
+  const kickoff = matchKickoff(date, time);
   const diff = kickoff - Date.now();
   if (diff <= 0 || diff > 24 * 3600000) return null;
   const h = Math.floor(diff / 3600000);
