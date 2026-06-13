@@ -1353,13 +1353,7 @@ function getRankings() {
     .sort((a, b) => b.pts - a.pts || b.exact - a.exact);
 }
 function denseRanks(rankings) {
-  const ranks = [];
-  let cur = 1;
-  for (let i = 0; i < rankings.length; i++) {
-    if (i > 0 && rankings[i].pts < rankings[i-1].pts) cur++;
-    ranks.push(cur);
-  }
-  return ranks;
+  return rankings.map(r => rankings.findIndex(x => x.pts === r.pts) + 1);
 }
 
 // ─── ROUTING ──────────────────────────────────────────────────────────────────
