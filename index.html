@@ -1630,7 +1630,7 @@ function renderTabelle() {
           <td><span class="chip chip-1">~ ${r.tend}</span></td>
           <td>
             <span class="pts-big">${r.pts}</span>
-            <span class="bar-wrap"><span class="bar-fill" style="width:${Math.round(r.pts/maxPts*100)}%"></span></span>
+            ${maxPts > 0 ? `<span class="bar-wrap"><span class="bar-fill" style="width:${Math.round(r.pts/maxPts*100)}%"></span></span>` : ''}
           </td>
         </tr>`).join('')}
       </tbody>
