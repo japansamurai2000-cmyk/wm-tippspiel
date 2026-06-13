@@ -1612,12 +1612,13 @@ function renderTabelle() {
   const rankings = getRankings();
   const maxPts = Math.max(1, ...rankings.map(r => r.pts));
   const medals = ['🥇','🥈','🥉'];
+  const ranks = denseRanks(rankings);
   document.getElementById('rankingContent').innerHTML = `
     <table class="standings">
       <thead><tr><th>#</th><th>${t('col_name')}</th><th>${t('col_tips')}</th><th>${t('col_exact')}</th><th>${t('col_tend')}</th><th>${t('col_pts')}</th></tr></thead>
       <tbody>${rankings.map((r, i) => `
         <tr>
-          <td class="medal">${medals[i] || (i+1)}</td>
+          <td class="medal">${medals[ranks[i]-1] || ranks[i]}</td>
           <td>${r.av} <strong>${r.name}</strong>${r.name===currentUser?' <span style="font-size:.7rem;background:var(--accent);color:white;padding:1px 6px;border-radius:8px">Du</span>':''}</td>
           <td style="font-size:.82rem;color:var(--muted)">${r.tipped}/${TOTAL_MATCHES}</td>
           <td><span class="chip chip-3">✓ ${r.exact}</span></td>
