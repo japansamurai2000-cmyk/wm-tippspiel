@@ -1498,7 +1498,7 @@ function renderTipps() {
     return true;
   }).sort((a, b) => {
     if (a.date !== b.date) return (a.date || 'zzzz') < (b.date || 'zzzz') ? -1 : 1;
-    const toMin = s => { if (!s) return 9999; const [h, m] = s.split(':').map(Number); return h === 0 ? 1440 + m : h * 60 + m; };
+    const toMin = s => { if (!s) return 9999; const [h, m] = s.split(':').map(Number); return h * 60 + m; };
     return toMin(a.time) - toMin(b.time) || a.id - b.id;
   });
 
@@ -1693,7 +1693,7 @@ function renderAlle() {
   if (alleFilterVal === 'all') filtered = [...MATCHES, ...KO_MATCHES];
   else if (alleFilterVal === 'KO') filtered = KO_MATCHES;
   else filtered = MATCHES.filter(m => m.group === alleFilterVal);
-  const toMin = s => { if (!s) return 9999; const [h, m] = s.split(':').map(Number); return h === 0 ? 1440 + m : h * 60 + m; };
+  const toMin = s => { if (!s) return 9999; const [h, m] = s.split(':').map(Number); return h * 60 + m; };
   filtered = [...filtered].sort((a, b) => {
     if ((a.date || 'zzzz') !== (b.date || 'zzzz')) return (a.date || 'zzzz') < (b.date || 'zzzz') ? -1 : 1;
     return toMin(a.time) - toMin(b.time) || a.id - b.id;
