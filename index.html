@@ -261,7 +261,15 @@ nav { background: rgba(0,0,0,.28); }
   .match-row { grid-template-columns: 1fr 100px 1fr; }
   .score-in { width: 40px; height: 42px; font-size: 1rem; }
   .tips-grid { grid-template-columns: repeat(2, 1fr); }
-  .standings th, .standings td { padding: 9px 8px; }
+  .standings th, .standings td { padding: 9px 6px; font-size: .82rem; }
+  /* hide TIPPS column — least important on small screens */
+  .standings th:nth-child(3), .standings td:nth-child(3) { display: none; }
+  /* hide bar — points number is enough on mobile */
+  .bar-wrap { display: none; }
+  /* prevent subtitle from wrapping across multiple lines */
+  .logo-text small { white-space: nowrap; }
+  /* compact header controls */
+  .user-pill { padding: 6px 10px; font-size: .82rem; }
 }
 
 /* ─── KO BRACKET ─── */
