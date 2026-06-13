@@ -1779,7 +1779,7 @@ function renderStartSchedule() {
     .filter(m => m.date && m.date >= today)
     .sort((a, b) => {
       if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-      const toMin = s => { if (!s) return 9999; const [h, mm] = s.split(':').map(Number); return h === 0 ? 1440 + mm : h * 60 + mm; };
+      const toMin = s => { if (!s) return 9999; const [h, mm] = s.split(':').map(Number); return h * 60 + mm; };
       return toMin(a.time) - toMin(b.time) || a.id - b.id;
     })
     .slice(0, 6);
